@@ -29,12 +29,14 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
 
-  const existedUser = await User.findOne({
-    $or: [{ username }, { email }],
-  });
+  const existingUsername = await User.findOne({ username });
+  if (existingUsername) {
+    throw new ApiError(409, "Username is already taken");
+  }
 
-  if (existedUser) {
-    throw new ApiError(409, "User with email or username already exists");
+  const existingEmail = await User.findOne({ email });
+  if (existingEmail) {
+    throw new ApiError(409, "Email is already registered");
   }
 
   const user = await User.create({
@@ -63,7 +65,6 @@ const loginUser = asyncHandler(async (req, res) => {
   // check if the password is correct
   // create access and refresh token
   // send cookies
-
   const { email, username, password } = req.body;
   //   console.log(email);
 
@@ -107,8 +108,8 @@ const loginUser = asyncHandler(async (req, res) => {
         200,
         {
           user: loggedInUser,
-          accessToken,
-          refreshToken,
+          // accessToken,
+          // refreshToken,
         },
         "User logged in successfully"
       )
@@ -187,4 +188,23 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+const getCurrentUser = asyncHandler(async (req, res) => {
+  const user = req.user;
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        user,
+      },
+      "User logged in successfully"
+    )
+  );
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  getCurrentUser,
+};
