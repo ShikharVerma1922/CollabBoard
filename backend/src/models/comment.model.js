@@ -9,7 +9,7 @@ const commentSchema = new Schema(
     },
     task: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Task",
       required: true,
     },
     text: {

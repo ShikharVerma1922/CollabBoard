@@ -1,3 +1,33 @@
-/* html {
-  background-color: #fcfaf9;
-} */
+:root {
+  --bg: #fcfaf9;
+  --text: #1e1e1e;
+  --accent: #5b21b6;
+  --surface: #ffffff;
+  --border: #e5e7eb;
+  --muted-text: #6b7280;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  --input-bg: #ffffff;
+  --hover: #efeeee;
+  --highlight: #eef2ff;
+  --accent-surface: #f3f0e8;
+}
+
+.dark {
+  --bg: #1e1e1e;
+  --text: #f3f4f6;
+  --accent: #c084fc;
+  --surface: #262626;
+  --border: #374151;
+  --muted-text: #9ca3af;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --error: #f87171;
+  --info: #60a5fa;
+  --input-bg: #1f2937;
+  --hover: #2c2c2c;
+  --highlight: #312e81;
+  --accent-surface: #2a2a2a;
+}

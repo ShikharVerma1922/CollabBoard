@@ -2,7 +2,7 @@ const FormButton = ({ loading, text, loadingText = "loading..." }) => (
   <button
     type="submit"
     disabled={loading}
-    className={`w-full py-2 rounded-[8px] text-white dark:text-black  relative group ${
+    className={`w-full py-2 rounded-[8px] text-white dark:text-black  relative group cursor-pointer ${
       loading
         ? "bg-gray-400 cursor-not-allowed"
         : "bg-black dark:bg-white hover:rounded-none"

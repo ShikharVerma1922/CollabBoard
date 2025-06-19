@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import FormInput from "../../components/form/FormInput.jsx";
+import FormInput from "../../components/Form/FormInput.jsx";
 import { useSignup } from "../../hooks/useSignup.jsx";
-import FormButton from "../../components/form/FormButton.jsx";
-import LogoHeader from "../../components/form/LogoHeader.jsx";
+
+import LogoHeader from "../../components/Form/LogoHeader.jsx";
+import FormButton from "../../components/Form/FormButton.jsx";
 
 const Signup = () => {
   const {
@@ -43,12 +44,19 @@ const Signup = () => {
             label="Email"
             name="email"
             register={register}
-            rules={{ required: "Please provide your email" }}
+            rules={{
+              required: "Please provide your email",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Please enter a valid email address",
+              },
+            }}
             error={errors.email}
           />
           <FormInput
             label="Password"
             name="password"
+            type="password"
             register={register}
             rules={{ required: "Please provide your password" }}
             error={errors.password}

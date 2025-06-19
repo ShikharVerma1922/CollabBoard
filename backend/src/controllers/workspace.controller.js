@@ -37,10 +37,14 @@ const getAllWorkspaces = asyncHandler(async (req, res) => {
 });
 
 const getWorkspaceById = asyncHandler(async (req, res) => {
-  const workspace = req.workspace;
+  const populatedWorkspace = await Workspace.findById(
+    req.workspace._id
+  ).populate("boards");
   return res
     .status(200)
-    .json(new ApiResponse(200, workspace, "Workspace fetched successfully"));
+    .json(
+      new ApiResponse(200, populatedWorkspace, "Workspace fetched successfully")
+    );
 });
 
 const updateWorkspace = asyncHandler(async (req, res) => {

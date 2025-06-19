@@ -3,22 +3,29 @@ import React, { useState } from "react";
 import { useAuth } from "../../context/authContext.jsx";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import FormInput from "../../components/form/FormInput.jsx";
+import FormInput from "../../components/Form/FormInput.jsx";
 import { useLogin } from "../../hooks/useLogin.jsx";
-import FormButton from "../../components/form/FormButton.jsx";
-import LogoHeader from "../../components/form/LogoHeader.jsx";
+import FormButton from "../../components/Form/FormButton.jsx";
 
 const Login = () => {
   const { user, setUser } = useAuth();
   const {
     register,
     handleSubmit,
+    setError,
+
     formState: { errors },
   } = useForm();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const onSubmit = useLogin({ setUser, navigate, setLoading });
+  const onSubmit = useLogin({
+    setUser,
+    setError,
+
+    navigate,
+    setLoading,
+  });
 
   return (
     <div className="min-h-screen pt-20 px-4">
@@ -29,7 +36,9 @@ const Login = () => {
           </h2>
         </div>
         <form
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={(e) => {
+            handleSubmit(onSubmit)(e);
+          }}
           className="space-y-4"
           autoComplete="off"
         >
@@ -44,9 +53,17 @@ const Login = () => {
             label="Password"
             name="password"
             register={register}
-            rules={{ required: "Please provide your password" }}
+            type="password"
+            rules={{
+              required: "Please provide your password",
+              minLength: {
+                value: 4,
+                message: "Minimum password lenght should be 4",
+              },
+            }}
             error={errors.password}
           />
+
           <FormButton
             loading={loading}
             text="Log in"
