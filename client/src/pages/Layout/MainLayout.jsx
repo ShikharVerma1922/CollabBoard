@@ -16,7 +16,7 @@ const MainLayout = () => {
   return (
     <div className="flex w-full h-screen bg-[var(--bg)]">
       <SideBar />
-      <div className="flex flex-1 flex-col w-full h-full text-[var(--text)]">
+      <div className="flex flex-1 flex-col w-full h-full text-[var(--text)] overflow-hidden">
         <main className="flex-1 overflow-y-auto p-4">
           <Topbar />
           <Outlet />

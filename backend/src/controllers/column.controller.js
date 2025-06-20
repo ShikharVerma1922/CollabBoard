@@ -24,7 +24,7 @@ const createColumn = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Column title is required");
   }
 
-  const column = await Column.create({
+  let column = await Column.create({
     title,
     board: board._id,
     createdBy: userId,
@@ -32,6 +32,7 @@ const createColumn = asyncHandler(async (req, res) => {
     visibility,
     color,
   });
+  column = await column.populate("tasks");
 
   board.columns.push(column._id);
   await board.save();
@@ -43,7 +44,7 @@ const createColumn = asyncHandler(async (req, res) => {
 });
 
 const updateColumnMetadata = asyncHandler(async (req, res) => {
-  const { title, description, color } = req.body;
+  const { title, description, color, visibility } = req.body;
   const userId = req.user._id;
   const board = req.board;
   const column = req.column;

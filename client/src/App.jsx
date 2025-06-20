@@ -45,47 +45,20 @@ function App() {
                 <Route path="resources" element={<Resources />} />
               </Route>
 
-              <Route path="/app" element={<MainLayout />}>
-                <Route
-                  index
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="workspace/:id"
-                  element={
-                    <ProtectedRoute>
-                      <WorkspacePage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="workspace/:workspaceId/board/:boardId"
-                  element={
-                    <ProtectedRoute>
-                      <BoardPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="workspace/:id/members"
-                  element={
-                    <ProtectedRoute>
-                      <MembersPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="settings"
-                  element={
-                    <ProtectedRoute>
-                      <SettingsPage />
-                    </ProtectedRoute>
-                  }
-                />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/app" element={<MainLayout />}>
+                  <Route index element={<Dashboard />} />
+                  <Route path="workspace/:id" element={<WorkspacePage />} />
+                  <Route
+                    path="workspace/:workspaceId/board/:boardId"
+                    element={<BoardPage />}
+                  />
+                  <Route
+                    path="workspace/:id/members"
+                    element={<MembersPage />}
+                  />
+                  <Route path="settings" element={<SettingsPage />} />
+                </Route>
               </Route>
 
               <Route path="*" element={<Nopage />} />

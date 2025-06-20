@@ -21,12 +21,14 @@ import {
 import { getRandomColor } from "../../Helper/iconHelper.js";
 import CreateWorkspaceModel from "../Modals/CreateWorkspaceModal.jsx";
 import { useWorkspaceList } from "../../context/WorkspaceListContext.jsx";
+import { useAuth } from "../../context/authContext.jsx";
 
 const SideBar = () => {
   const { workspaceList, setWorkspaceList } = useWorkspaceList();
   const [expandedWorkspace, setExpandedWorkspace] = useState([]);
   const [isSBCollapsed, setIsSBCollapsed] = useState(false);
   const [showModel, setShowModal] = useState(false);
+  const { logout } = useAuth();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -41,7 +43,7 @@ const SideBar = () => {
       }`}
     >
       <div
-        className={`flex justify-around sm:justify-between self-center pt-3 w-full ${
+        className={`flex justify-around sm:justify-start self-center pt-3 w-full ${
           isSBCollapsed ? "flex-col gap-6" : "mb-4"
         }`}
       >
@@ -269,6 +271,7 @@ const SideBar = () => {
             className={`flex justify-around gap-2 hover:text-red-400 cursor-pointer sm:${
               isSBCollapsed ? "justify-around" : "justify-start"
             }`}
+            onClick={logout}
           >
             <HiLogout className="text-xl" />
             {!isSBCollapsed && <span className="hidden sm:block">Logout</span>}

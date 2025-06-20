@@ -16,6 +16,7 @@ const WorkspacePage = () => {
   const { workspace, setWorkspace } = useWorkspace();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [error, setError] = useState(null);
 
   const [showModal, setShowModal] = useState(false);
   const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
@@ -32,6 +33,12 @@ const WorkspacePage = () => {
         setWorkspace(res.data.data);
       } catch (err) {
         console.error("Error fetching workspace:", err);
+        console.log(err.response?.status);
+        if (err.response?.status === 403) {
+          setError("not-member");
+        } else {
+          setError("other");
+        }
       } finally {
         setLoading(false);
       }
@@ -40,12 +47,21 @@ const WorkspacePage = () => {
     fetchWorkspace();
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
-  if (!workspace) return <p>Workspace not found</p>;
-
   function handleCreateBoard() {
     setShowModal(true);
   }
+
+  if (error === "not-member") {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center text-[var(--text)]">
+        <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+        <p className="text-gray-400">You are not a member of this workspace.</p>
+      </div>
+    );
+  }
+
+  if (loading) return <p>Loading...</p>;
+  if (!workspace) return <p>Workspace not found</p>;
 
   return (
     <div className="text-[var(--text)] p-4">

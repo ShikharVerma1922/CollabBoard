@@ -35,11 +35,16 @@ const createBoard = asyncHandler(async (req, res) => {
 });
 
 const getBoardById = asyncHandler(async (req, res) => {
-  const board = req.board;
+  const populatedBoard = await Board.findById(req.board._id).populate({
+    path: "columns",
+    populate: {
+      path: "tasks", // 👈 nested populate
+    },
+  });
 
   return res
     .status(200)
-    .json(new ApiResponse(200, board, "Board fetched successfully"));
+    .json(new ApiResponse(200, populatedBoard, "Board fetched successfully"));
 });
 
 const updateBoardMetadata = asyncHandler(async (req, res) => {
