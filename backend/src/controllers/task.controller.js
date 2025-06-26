@@ -37,8 +37,13 @@ const createTask = asyncHandler(async (req, res) => {
   column.tasks.push(task._id);
   await column.save();
 
-  req.io?.to(req.board._id.toString())?.emit("task-created", task);
-
+  try {
+    console.log("Emitting 'task-created' to board:", req.board._id.toString());
+    // req.io?.to(req.board._id.toString())?.emit("task-created", task);
+    req.io.emit("task-created", { task, createdBy: req.user.username });
+  } catch (err) {
+    console.error("Socket emit failed:", err);
+  }
   return res
     .status(201)
     .json(new ApiResponse(201, task, "Task created successfully"));
@@ -100,6 +105,43 @@ const updateTaskMetadata = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, task, "Task updated successfully"));
+});
+
+const updateTaskStatus = asyncHandler(async (req, res) => {
+  const { taskCompleted } = req.body;
+  const task = req.task;
+
+  const userId = req.user._id;
+  const isAdmin = req.workspace.admins.some(
+    (id) => id.toString() === userId.toString()
+  );
+  const isCreator = req.task.createdBy.toString() === userId.toString();
+  const isAssignedUser = req.task.assignedTo?.toString() === userId.toString();
+
+  const isAllowedToEdit = isAdmin || isCreator || isAssignedUser;
+
+  if (!isAllowedToEdit) {
+    throw new ApiError(403, "You do not have permission to update this task");
+  }
+
+  if (typeof taskCompleted !== "boolean") {
+    throw new ApiError(400, "Task status must be a boolean");
+  }
+
+  task.completed = taskCompleted;
+  await task.save();
+
+  req.io
+    ?.to(req.board._id.toString())
+    ?.emit("task-status-updated", {
+      task,
+      taskCompleted,
+      updatedBy: req.user.username,
+    });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, task, "Task status updated successfully"));
 });
 
 const moveTaskToColumn = asyncHandler(async (req, res) => {
@@ -231,4 +273,5 @@ export {
   deleteTask,
   getTaskById,
   reorderTaskInColumn,
+  updateTaskStatus,
 };

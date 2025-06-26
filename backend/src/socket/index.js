@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import { ApiError } from "../utils/ApiError.js";
 import { Server } from "socket.io";
 import {
   registerAuthHandler,
@@ -11,21 +10,26 @@ import { registerTypingHandlers } from "./events/typing.event.js";
 let io;
 
 export const initSocket = (server) => {
+  console.log("Socket.io server initializing...");
   io = new Server(server, {
     cors: {
-      origin: process.env.CORS_ORIGIN,
+      origin: process.env.CORS_ORIGIN || "http://localhost:5173",
       credentials: true,
     },
   });
 
   io.use((socket, next) => {
-    const accessToken = socket.handshake.headers.cookie
+    const cookieHeader = socket.handshake.headers.cookie;
+    console.log("Socket handshake cookies:", cookieHeader);
+
+    const accessToken = cookieHeader
       ?.split("; ")
       .find((row) => row.startsWith("accessToken="))
       ?.split("=")[1];
 
     if (!accessToken) {
-      return next(new ApiError(401, "Unauthorized access"));
+      console.log("No accessToken found in cookies!");
+      return next(new Error("Unauthorized access"));
     }
 
     try {
@@ -33,11 +37,14 @@ export const initSocket = (server) => {
       socket.user = decoded;
       next();
     } catch (error) {
-      return next(new ApiError(401, "Invalid token"));
+      console.log("JWT verification failed:", error.message);
+      return next(new Error("Invalid token"));
     }
   });
 
   io.on("connection", (socket) => {
+    console.log("Socket connected:", socket.id);
+    // Register event handlers only after successful authentication
     registerAuthHandler(io, socket);
     registerWorkspaceHandler(io, socket);
     registerBoardHandlers(io, socket);

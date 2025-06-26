@@ -6,14 +6,13 @@ import { useLocation, NavLink, useNavigate } from "react-router-dom";
 import {
   HiSearch,
   HiHome,
-  HiViewGrid,
   HiCog,
   HiLogout,
   HiUsers,
   HiViewBoards,
   HiPlus,
 } from "react-icons/hi";
-import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
+import { RiArrowDropDownLine } from "react-icons/ri";
 import {
   TbLayoutSidebarLeftCollapse,
   TbLayoutSidebarLeftExpand,
@@ -43,7 +42,7 @@ const SideBar = () => {
       }`}
     >
       <div
-        className={`flex justify-around sm:justify-start self-center pt-3 w-full ${
+        className={`flex justify-around sm:justify-between self-center pt-3 w-full ${
           isSBCollapsed ? "flex-col gap-6" : "mb-4"
         }`}
       >
@@ -93,8 +92,8 @@ const SideBar = () => {
       <div className=" pb-10 pt-2 text-[var(--text)] h-full flex flex-col justify-between align-middle mt-6 sm:mt-0">
         <div className="flex flex-col align-middle justify-center gap-2">
           <h2
-            className={`flex items-middle gap-2 cursor-pointer hover:text-[var(--accent)] justify-around sm:${
-              isSBCollapsed ? "justify-around" : "justify-start"
+            className={`flex items-middle gap-2 cursor-pointer hover:text-[var(--accent)] justify-around ${
+              isSBCollapsed ? "sm:justify-around" : "sm:justify-start"
             }`}
           >
             <HiSearch className="text-xl self-center" />
@@ -159,12 +158,18 @@ const SideBar = () => {
                   >
                     {/* Workspace Title */}
                     <h2
-                      className={`flex items-center justify-around w-full cursor-pointer hover:text-[var(--accent)] pr-1 pl-1 sm:${
+                      className={`flex items-start justify-between w-full cursor-pointer hover:text-[var(--accent)] pr-1 pl-1 sm:${
                         isSBCollapsed ? "justify-around" : "justify-between"
                       } ${isExpanded ? "font-semibold" : ""}`}
                       onClick={() => setExpandedWorkspace(workspace._id)}
                     >
-                      <div className="flex gap-2 items-center min-w-0">
+                      <div
+                        className={`flex gap-2 items-center min-w-0 ${
+                          isExpanded
+                            ? "hover:text-[var(--text)] cursor-default"
+                            : "hover:text-[var(-accent)]"
+                        }`}
+                      >
                         <div
                           className="min-w-6 h-6 rounded text-black flex items-center justify-center text-xs font-semibold"
                           style={{
@@ -195,9 +200,10 @@ const SideBar = () => {
                     {/* Board and Members */}
                     {isExpanded && (
                       <div
-                        className={`mt-3 flex flex-col justify-center gap-2 sm:${
-                          isSBCollapsed ? "ml-0" : "ml-7"
-                        }`}
+                        className={
+                          "mt-3 flex flex-col justify-center ml-0 gap-2 " +
+                          (isSBCollapsed ? "sm:ml-0" : "sm:ml-7")
+                        }
                       >
                         <NavLink
                           to={`/app/workspace/${workspace._id}`}

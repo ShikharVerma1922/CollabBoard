@@ -9,6 +9,7 @@ import {
   moveTaskToColumn,
   reorderTaskInColumn,
   updateTaskMetadata,
+  updateTaskStatus,
 } from "../controllers/task.controller.js";
 import { requireColumnAccess } from "../middlewares/column.middleware.js";
 import { requireTaskAccess } from "../middlewares/task.middleware.js";
@@ -31,6 +32,15 @@ router.patch(
   requireColumnAccess,
   requireTaskAccess,
   updateTaskMetadata
+);
+router.patch(
+  "/:taskId/status",
+  verifyJWT,
+  requireMember,
+  requireBoardAccess,
+  requireColumnAccess,
+  requireTaskAccess,
+  updateTaskStatus
 );
 router.post(
   "/:taskId/move",

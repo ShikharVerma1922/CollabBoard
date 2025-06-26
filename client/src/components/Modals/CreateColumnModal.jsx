@@ -50,7 +50,7 @@ const CreateColumnModal = ({ setShowModal }) => {
   };
 
   return (
-    <div className="bg-[var(--surface)] mt-2 p-4 rounded-lg shadow-md w-72 text-[var(--text)] border border-[var(--border)]">
+    <div className="bg-[var(--surface)] p-4 rounded-lg shadow-md w-72 text-[var(--text)] border border-[var(--border)]">
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-sm font-semibold">Create Column</h2>
         <button
@@ -85,6 +85,7 @@ const CreateColumnModal = ({ setShowModal }) => {
         <label className="block text-sm mb-1">Color</label>
         <input
           type="color"
+          defaultValue="#D3D3D3"
           {...register("color")}
           className="w-full h-10 mb-3 border border-gray-300 rounded bg-transparent cursor-pointer"
         />

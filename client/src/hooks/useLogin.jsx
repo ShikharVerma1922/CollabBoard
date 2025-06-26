@@ -1,5 +1,6 @@
 // src/hooks/useLogin.jsx
 import { loginUser } from "../services/authService.js";
+import socket from "../services/socket.js";
 
 export const useLogin = ({
   setUser,
@@ -18,6 +19,7 @@ export const useLogin = ({
 
       setUser(userData);
       console.log("User logged in successfully");
+     
       navigate("/app");
     } catch (err) {
       if (err.response && err.response.data) {

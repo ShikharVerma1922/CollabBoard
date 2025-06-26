@@ -35,7 +35,7 @@ const UpdateWorkspaceModal = ({ setShowModal }) => {
         { title },
         { withCredentials: true }
       );
-      setWorkspace(res.data.data);
+      setWorkspace((prev) => ({ ...prev, title: res.data.data.title }));
       setWorkspaceList((prev) =>
         prev.map((workspace) =>
           workspace._id === res.data.data._id ? res.data.data : workspace

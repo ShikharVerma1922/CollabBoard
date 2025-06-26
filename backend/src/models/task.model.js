@@ -30,6 +30,11 @@ const taskSchema = new Schema(
     position: {
       type: Number,
     },
+    completed: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   { timestamps: true }
 );

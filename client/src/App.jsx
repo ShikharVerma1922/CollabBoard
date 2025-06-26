@@ -18,6 +18,7 @@ import BoardPage from "./pages/App/BoardPage.jsx";
 import MembersPage from "./pages/App/MembersPage.jsx";
 import SettingsPage from "./pages/App/SettingsPage.jsx";
 import { WorkspaceListProvider } from "./context/WorkspaceListContext.jsx";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const { loadingUser, user } = useAuth();
@@ -35,6 +36,7 @@ function App() {
       <AuthProvider>
         <WorkspaceProvider>
           <WorkspaceListProvider>
+            <Toaster position="top-right" reverseOrder={false} />
             <Routes>
               <Route path="/" element={<AuthLayout />}>
                 <Route index element={<Home />} />
@@ -54,7 +56,7 @@ function App() {
                     element={<BoardPage />}
                   />
                   <Route
-                    path="workspace/:id/members"
+                    path="workspace/:workspaceId/members"
                     element={<MembersPage />}
                   />
                   <Route path="settings" element={<SettingsPage />} />

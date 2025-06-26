@@ -2,6 +2,7 @@
   --bg: #fcfaf9;
   --text: #1e1e1e;
   --accent: #5b21b6;
+  --hover-accent: #6c27da;
   --surface: #ffffff;
   --border: #e5e7eb;
   --muted-text: #6b7280;
@@ -19,6 +20,7 @@
   --bg: #1e1e1e;
   --text: #f3f4f6;
   --accent: #c084fc;
+  --hover-accent: #a673d8;
   --surface: #262626;
   --border: #374151;
   --muted-text: #9ca3af;

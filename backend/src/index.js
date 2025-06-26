@@ -10,7 +10,7 @@ connectDB()
   .then(() => {
     const server = createServer(); // Create HTTP server without app yet
     const io = initSocket(server); // Initialize socket.io with server
-    const app = initApp(io); // Pass io into app initializer to attach middleware
+    const app = initApp(io); // Now pass io to initApp
     server.on("request", app); // Attach express app as request handler
 
     server.listen(process.env.PORT || 3000, () => {

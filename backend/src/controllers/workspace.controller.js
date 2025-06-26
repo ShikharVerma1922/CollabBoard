@@ -111,13 +111,18 @@ const addMembers = asyncHandler(async (req, res) => {
   const users = await User.find({ username: { $in: members } });
   const foundUsernames = users.map((u) => u.username);
   const notFound = members.filter((m) => !foundUsernames.includes(m));
-  const userIdsToAdd = users.map((u) => u._id.toString());
+  const userIdsToAdd = users.map((u) => ({
+    userId: u._id.toString(),
+    username: u.username,
+  }));
 
   const workspace = req.workspace;
   const currentMemberIds = workspace.members.map((id) => id.toString());
   console.log("currentmembers", currentMemberIds);
 
-  const newMembers = userIdsToAdd.filter((u) => !currentMemberIds.includes(u));
+  const newMembers = userIdsToAdd.filter(
+    (u) => !currentMemberIds.includes(u.userId)
+  );
 
   if (newMembers.length === 0) {
     return res
@@ -126,7 +131,10 @@ const addMembers = asyncHandler(async (req, res) => {
   }
 
   workspace.members = Array.from(
-    new Set([...workspace.members.map(String), ...newMembers])
+    new Set([
+      ...workspace.members.map((id) => id.toString()),
+      ...newMembers.map((m) => m.userId),
+    ])
   );
   await workspace.save();
 
@@ -266,6 +274,42 @@ const removeMember = asyncHandler(async (req, res) => {
     );
 });
 
+const getWorkspaceMembers = asyncHandler(async (req, res) => {
+  const workspace = await req.workspace.populate(
+    "members",
+    "username fullName"
+  );
+  const memberList = workspace.members.map((member) => ({
+    _id: member._id,
+    username: member.username,
+    fullName: member.fullName,
+    role: workspace.admins.some(
+      (adminId) => adminId.toString() === member._id.toString()
+    )
+      ? "admin"
+      : "member",
+  }));
+
+  // Determine current user's role
+  const currentUserRole = workspace.admins.some(
+    (adminId) => adminId.toString() === req.user._id.toString()
+  )
+    ? "admin"
+    : "member";
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        memberList,
+        currentUserRole,
+        workspace: req.workspace,
+      },
+      "Workspace members fetched successfully"
+    )
+  );
+});
+
 const leaveWorkspace = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const workspace = req.workspace;
@@ -315,5 +359,6 @@ export {
   addMembers,
   updateAdminStatus,
   removeMember,
+  getWorkspaceMembers,
   leaveWorkspace,
 };

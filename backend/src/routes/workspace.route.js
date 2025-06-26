@@ -6,6 +6,7 @@ import {
   deleteWorkspace,
   getAllWorkspaces,
   getWorkspaceById,
+  getWorkspaceMembers,
   leaveWorkspace,
   removeMember,
   updateAdminStatus,
@@ -29,6 +30,12 @@ router.patch(
   updateAdminStatus
 );
 router.delete("/:workspaceId/members", verifyJWT, requireAdmin, removeMember);
+router.get(
+  "/:workspaceId/members",
+  verifyJWT,
+  requireMember,
+  getWorkspaceMembers
+);
 router.post("/:workspaceId/leave", verifyJWT, requireMember, leaveWorkspace);
 
 export default router;
