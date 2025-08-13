@@ -24,7 +24,7 @@ const taskSchema = new Schema(
     },
     createdBy: {
       type: Schema.Types.ObjectId,
-      ref: "Column",
+      ref: "User",
       required: true,
     },
     position: {

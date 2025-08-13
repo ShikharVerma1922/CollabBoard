@@ -3,11 +3,11 @@ import { registerUser } from "../services/authService.js";
 // hooks/useSignup.js
 export const useSignup = ({ setError, navigate, setLoading }) => {
   return async (data) => {
-    const { username, email, password } = data;
+    const { username, email, password, fullName } = data;
     setLoading(true);
 
     try {
-      await registerUser({ username, email, password });
+      await registerUser({ username, email, password, fullName });
       navigate("/login");
     } catch (err) {
       const message = err.response?.data?.message || "Signup failed";
@@ -15,6 +15,8 @@ export const useSignup = ({ setError, navigate, setLoading }) => {
         setError("username", { type: "manual", message });
       } else if (message.includes("Email")) {
         setError("email", { type: "manual", message });
+      } else if (message.includes("Fullname")) {
+        setError("fullName", { type: "manual", message });
       } else {
         alert(message);
       }

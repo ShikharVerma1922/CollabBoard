@@ -70,7 +70,7 @@ router.get(
   getTaskById
 );
 router.post(
-  "/",
+  "/reorder",
   verifyJWT,
   requireMember,
   requireBoardAccess,

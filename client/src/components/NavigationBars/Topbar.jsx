@@ -22,6 +22,8 @@ const Topbar = () => {
     if (pathSegments[3] === "board" && pathSegments[4]) {
       boardBC = board?.title;
     }
+  } else if (pathSegments[1] === "tasks") {
+    workspaceBC = "Tasks";
   } else if (pathSegments[0] === "app") {
     workspaceBC = "Dashboard";
   }
@@ -29,7 +31,11 @@ const Topbar = () => {
     <nav className="w-full bg-[var(--accent-surface)] rounded-xl py-1.5 px-3 sticky top-0 z-10 shadow-md justify-between hidden sm:flex">
       <h2 className="text-xl sm:text-base font-medium text-[var(--text)] self-center">
         <span
-          onClick={() => navigate(`/app/workspace/${workspace._id}`)}
+          onClick={() =>
+            workspaceBC !== "Tasks" &&
+            workspaceBC !== "Dashboard" &&
+            navigate(`/app/workspace/${workspace._id}`)
+          }
           className="cursor-pointer"
         >
           {workspaceBC}

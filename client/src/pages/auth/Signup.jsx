@@ -41,6 +41,13 @@ const Signup = () => {
             error={errors.username}
           />
           <FormInput
+            label="FullName"
+            name="fullName"
+            register={register}
+            rules={{ required: "Please provide your fullname" }}
+            error={errors.fullName}
+          />
+          <FormInput
             label="Email"
             name="email"
             register={register}

@@ -14,6 +14,11 @@ import {
 } from "../controllers/workspace.controller.js";
 import { requireMember } from "../middlewares/requireWorkspaceMember.js";
 import { requireAdmin } from "../middlewares/requireWorkspaceAdmin.js";
+import {
+  getFavouriteBoards,
+  getRecentBoards,
+} from "../controllers/board.controller.js";
+import { getAssignedTasks } from "../controllers/task.controller.js";
 
 const router = Router();
 
@@ -37,5 +42,8 @@ router.get(
   getWorkspaceMembers
 );
 router.post("/:workspaceId/leave", verifyJWT, requireMember, leaveWorkspace);
+router.get("/boards/recent", verifyJWT, getRecentBoards);
+router.get("/boards/favourite", verifyJWT, getFavouriteBoards);
+router.get("/tasks/assigned", verifyJWT, getAssignedTasks);
 
 export default router;

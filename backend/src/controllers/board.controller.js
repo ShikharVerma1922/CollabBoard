@@ -1,8 +1,9 @@
-import { Board } from "../models/board.model.js";
+import { Board, BoardUserActivity } from "../models/board.model.js";
 import { Column } from "../models/column.model.js";
 import { Comment } from "../models/comment.model.js";
 import { Message } from "../models/message.model.js";
 import { Task } from "../models/task.model.js";
+import { Workspace } from "../models/workspace.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -35,16 +36,34 @@ const createBoard = asyncHandler(async (req, res) => {
 });
 
 const getBoardById = asyncHandler(async (req, res) => {
-  const populatedBoard = await Board.findById(req.board._id).populate({
-    path: "columns",
-    populate: {
-      path: "tasks", // 👈 nested populate
-    },
-  });
+  const populatedBoard = await Board.findById(req.board._id)
+    .populate({
+      path: "columns",
+      populate: {
+        path: "tasks", // 👈 nested populate
+      },
+    })
+    .lean();
+
+  await BoardUserActivity.findOneAndUpdate(
+    { board: req.board._id, user: req.user._id },
+    { lastOpenedAt: new Date() },
+    { upsert: true }
+  );
+
+  const isFavourite = populatedBoard.favourite.some((id) =>
+    id.equals(req.user._id)
+  );
 
   return res
     .status(200)
-    .json(new ApiResponse(200, populatedBoard, "Board fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        { ...populatedBoard, favourite: isFavourite },
+        "Board fetched successfully"
+      )
+    );
 });
 
 const updateBoardMetadata = asyncHandler(async (req, res) => {
@@ -165,6 +184,97 @@ const reorderColumns = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, board, "Column order updated sucessfully"));
 });
 
+const getRecentBoards = asyncHandler(async (req, res) => {
+  const boardActivities = await BoardUserActivity.find({
+    user: req.user._id,
+  })
+    .sort({ lastOpenedAt: -1 })
+    .limit(5)
+    .select("board")
+    .lean();
+
+  const boardIds = boardActivities.map((act) => act.board);
+
+  const recentBoards = await Board.find({ _id: { $in: boardIds } })
+    .populate({
+      path: "workspace",
+      select: "_id title",
+    })
+    .select("-columns -createdBy");
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        recentBoards,
+        "Top 5 recently opened boards fetched successfully"
+      )
+    );
+});
+
+const toggleFavourite = asyncHandler(async (req, res) => {
+  const board = await Board.findById(req.board._id);
+
+  const isFavourite = board.favourite?.some((id) => id.equals(req.user._id));
+
+  if (isFavourite) {
+    board.favourite = board.favourite.filter((id) => !id.equals(req.user._id));
+  } else {
+    board.favourite.push(req.user._id);
+  }
+
+  await board.save();
+
+  const plainBoard = board.toObject();
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { ...plainBoard, favourite: !isFavourite },
+        `Board marked ${!isFavourite ? "favourite" : "not favourite"}`
+      )
+    );
+});
+
+const getFavouriteBoards = asyncHandler(async (req, res) => {
+  const workspaces = await Workspace.find({
+    members: { $in: [req.user._id] },
+  }).select("_id");
+
+  const workspaceIds = workspaces.map((ws) => ws._id);
+
+  if (workspaceIds.length === 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, [], "No favourite boards found"));
+  }
+
+  // ✅ Only find boards in the user's workspaces AND where favourite array contains userId
+  const favouriteBoards = await Board.find({
+    workspace: { $in: workspaceIds },
+    favourite: req.user._id,
+  })
+    .populate({
+      path: "workspace",
+      select: "_id title",
+    })
+    .sort({ lastOpenedAt: -1 })
+    .select("-columns -createdBy")
+    .lean(); // return plain objects
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        favouriteBoards,
+        "Favourite boards fetched successfully"
+      )
+    );
+});
+
 export {
   createBoard,
   getBoardById,
@@ -172,4 +282,7 @@ export {
   deleteBoard,
   getAllBoardsForWorkspace,
   reorderColumns,
+  getRecentBoards,
+  toggleFavourite,
+  getFavouriteBoards,
 };

@@ -5,5 +5,37 @@
 html,
 body {
   height: 100%;
-  overflow: hidden;
+  overflow: auto; /* allow scroll */
+  -ms-overflow-style: none; /* IE/Edge legacy */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Hide scrollbars in WebKit browsers (Chrome/Safari/Edge Chromium) */
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* styles.css or Tailwind's @layer if you're using Tailwind */
+.task-highlight {
+  outline: 2px solid var(--surface);
+  outline-offset: -2px; /* stays inside the element */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  background-color: var(--hover-accent);
+  animation: pulseOutline 0.8s ease-out;
+}
+
+@keyframes pulseOutline {
+  0% {
+    outline-color: transparent;
+    box-shadow: none;
+  }
+  50% {
+    outline-color: var(--accent);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  }
+  100% {
+    outline-color: transparent;
+    box-shadow: none;
+  }
 }

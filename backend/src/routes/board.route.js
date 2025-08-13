@@ -6,7 +6,9 @@ import {
   deleteBoard,
   getAllBoardsForWorkspace,
   getBoardById,
+  getRecentBoards,
   reorderColumns,
+  toggleFavourite,
   updateBoardMetadata,
 } from "../controllers/board.controller.js";
 import { requireBoardAccess } from "../middlewares/board.middleware.js";
@@ -42,6 +44,13 @@ router.post(
   requireMember,
   requireBoardAccess,
   reorderColumns
+);
+router.patch(
+  "/:boardId/toggle-favourite",
+  verifyJWT,
+  requireMember,
+  requireBoardAccess,
+  toggleFavourite
 );
 
 export default router;

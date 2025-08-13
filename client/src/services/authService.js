@@ -22,10 +22,10 @@ export const getCurrentUser = async () => {
   return res.data.data.user;
 };
 
-export const registerUser = async ({ username, email, password }) => {
+export const registerUser = async ({ username, email, password, fullName }) => {
   const res = await axios.post(
     "http://localhost:3000/api/v1/users/register",
-    { username, email, password },
+    { username, email, password, fullName },
     { withCredentials: true }
   );
 

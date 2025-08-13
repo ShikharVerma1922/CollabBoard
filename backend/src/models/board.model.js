@@ -32,8 +32,43 @@ const boardSchema = new Schema(
         ref: "Column",
       },
     ],
+    lastOpenedAt: {
+      type: Date,
+      default: Date.now,
+    },
+    favourite: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
+      default: [],
+    },
   },
   { timestamps: true }
+);
+
+const boardUserActivitySchema = new Schema({
+  board: {
+    type: Schema.Types.ObjectId,
+    ref: "Board",
+    required: true,
+  },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  lastOpenedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+export const BoardUserActivity = mongoose.model(
+  "BoardUserActivity",
+  boardUserActivitySchema
 );
 
 export const Board = mongoose.model("Board", boardSchema);

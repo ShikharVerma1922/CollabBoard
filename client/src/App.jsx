@@ -17,8 +17,10 @@ import { WorkspaceProvider } from "./context/WorkspaceContext.jsx";
 import BoardPage from "./pages/App/BoardPage.jsx";
 import MembersPage from "./pages/App/MembersPage.jsx";
 import SettingsPage from "./pages/App/SettingsPage.jsx";
+import AssignedTasks from "./pages/App/AssignedTasks.jsx";
 import { WorkspaceListProvider } from "./context/WorkspaceListContext.jsx";
 import { Toaster } from "react-hot-toast";
+import ChatModal from "./components/Chat/ChatModal.jsx";
 
 function App() {
   const { loadingUser, user } = useAuth();
@@ -50,6 +52,7 @@ function App() {
               <Route element={<ProtectedRoute />}>
                 <Route path="/app" element={<MainLayout />}>
                   <Route index element={<Dashboard />} />
+                  <Route path="tasks" element={<AssignedTasks />} />
                   <Route path="workspace/:id" element={<WorkspacePage />} />
                   <Route
                     path="workspace/:workspaceId/board/:boardId"
@@ -60,6 +63,7 @@ function App() {
                     element={<MembersPage />}
                   />
                   <Route path="settings" element={<SettingsPage />} />
+                  <Route path="chat" element={<ChatModal />} />
                 </Route>
               </Route>
 

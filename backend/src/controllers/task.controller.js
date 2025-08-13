@@ -131,13 +131,11 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
   task.completed = taskCompleted;
   await task.save();
 
-  req.io
-    ?.to(req.board._id.toString())
-    ?.emit("task-status-updated", {
-      task,
-      taskCompleted,
-      updatedBy: req.user.username,
-    });
+  req.io?.to(req.board._id.toString())?.emit("task-status-updated", {
+    task,
+    taskCompleted,
+    updatedBy: req.user.username,
+  });
 
   return res
     .status(200)
@@ -145,7 +143,7 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
 });
 
 const moveTaskToColumn = asyncHandler(async (req, res) => {
-  const { columnId } = req.body;
+  const { columnId, position } = req.body;
   const task = req.task;
   const currentColumn = req.column;
 
@@ -165,26 +163,34 @@ const moveTaskToColumn = asyncHandler(async (req, res) => {
 
   const nextColumn = await Column.findById(columnId);
   if (!nextColumn) {
-    throw new ApiError(403, "Column (where to move task) does not exists");
+    throw new ApiError(403, "Target column does not exist");
   }
 
-  if (columnId === req.column._id.toString()) {
-    throw new ApiError(400, "Task is already in the specified column");
+  const oldColumnId = currentColumn._id.toString();
+  const newColumnId = nextColumn._id.toString();
+
+  if (oldColumnId === newColumnId && position === task.position) {
+    return res.status(200).json(new ApiResponse(200, task, "No change needed"));
   }
 
-  const taskCount = await Task.countDocuments({ column: columnId });
+  // Remove task from old column
+  await Column.updateOne({ _id: oldColumnId }, { $pull: { tasks: task._id } });
 
-  task.column = columnId;
-  task.position = taskCount;
+  // Insert task at specific position in new column
+  await Column.updateOne(
+    { _id: newColumnId },
+    { $push: { tasks: { $each: [task._id], $position: position ?? 0 } } }
+  );
+
+  task.column = newColumnId;
+  task.position = position ?? 0;
   await task.save();
 
-  currentColumn.tasks.pull(task._id);
-  await currentColumn.save();
-
-  nextColumn.tasks.push(task._id);
-  await nextColumn.save();
-
-  req.io?.to(req.board._id.toString())?.emit("task-moved", task);
+  req.io?.to(req.board._id.toString())?.emit("task-moved", {
+    taskId: task._id,
+    toColumnId: newColumnId,
+    position: task.position,
+  });
 
   return res
     .status(200)
@@ -223,7 +229,19 @@ const deleteTask = asyncHandler(async (req, res) => {
 
 // get task by ID
 const getTaskById = asyncHandler(async (req, res) => {
-  const task = req.task;
+  const task = await Task.findById(req.task._id)
+    .populate({
+      path: "column",
+      select: "title",
+    })
+    .populate({
+      path: "assignedTo",
+      select: "username fullName",
+    })
+    .populate({
+      path: "createdBy",
+      select: "username fullName",
+    });
 
   return res
     .status(200)
@@ -233,6 +251,7 @@ const getTaskById = asyncHandler(async (req, res) => {
 // reorder tasks in column
 const reorderTaskInColumn = asyncHandler(async (req, res) => {
   const { taskOrder } = req.body;
+  const column = req.column;
 
   if (!taskOrder || !Array.isArray(taskOrder)) {
     throw new ApiError(400, "Task order must be an array of task IDs");
@@ -240,29 +259,109 @@ const reorderTaskInColumn = asyncHandler(async (req, res) => {
 
   const tasks = await Task.find({ _id: { $in: taskOrder } });
 
-  const taskMap = new Map(tasks.map((t) => [t._id.toString(), t]));
+  column.tasks = taskOrder;
+  await column.save();
 
   for (let i = 0; i < taskOrder.length; i++) {
-    let taskId = taskOrder[i];
-    let task = taskMap.get(taskId.toString());
-
-    if (task) {
+    const task = tasks.find((t) => t._id.toString() === taskOrder[i]);
+    if (task && task.column.toString() === req.column._id.toString()) {
       task.position = i;
       await task.save();
     }
   }
-  req.io?.to(req.board._id.toString())?.emit("tasks-reordered", {
-    columnId: req.column._id,
-    taskOrder,
-  });
+
+  // tasks.req.io?.to(req.board._id.toString())?.emit("tasks-reordered", {
+  //   columnId: column._id,
+  //   taskOrder,
+  // });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Task position updated successfully"));
+});
+
+const getAssignedTasks = asyncHandler(async (req, res) => {
+  const assignedTasks = await Task.aggregate([
+    {
+      $match: {
+        assignedTo: req.user._id,
+        completed: false,
+      },
+    },
+    // Lookup column
+    {
+      $lookup: {
+        from: "columns",
+        localField: "column",
+        foreignField: "_id",
+        as: "column",
+      },
+    },
+    { $unwind: "$column" },
+    // Lookup board
+    {
+      $lookup: {
+        from: "boards",
+        localField: "column.board",
+        foreignField: "_id",
+        as: "board",
+      },
+    },
+    { $unwind: "$board" },
+    // Lookup workspace
+    {
+      $lookup: {
+        from: "workspaces",
+        localField: "board.workspace",
+        foreignField: "_id",
+        as: "workspace",
+      },
+    },
+    { $unwind: "$workspace" },
+    // Add fields
+    {
+      $addFields: {
+        isDueDateNull: { $eq: ["$dueDate", null] },
+        workspaceInfo: {
+          _id: "$workspace._id",
+          title: "$workspace.title",
+        },
+        boardInfo: {
+          _id: "$board._id",
+          title: "$board.title",
+        },
+        columnInfo: {
+          _id: "$column._id",
+          title: "$column.title",
+        },
+      },
+    },
+    // Sort: non-null due dates ascending, null due dates last
+    {
+      $sort: {
+        isDueDateNull: 1,
+        dueDate: 1,
+      },
+    },
+    // Clean output
+    {
+      $project: {
+        title: 1,
+        description: 1,
+        dueDate: 1,
+        completed: 1,
+        assignedTo: 1,
+        workspaceInfo: 1,
+        boardInfo: 1,
+        columnInfo: 1,
+      },
+    },
+  ]);
+
   return res
     .status(200)
     .json(
-      new ApiResponse(
-        200,
-        null,
-        "Task position updated successfully successfully"
-      )
+      new ApiResponse(200, assignedTasks, "Assigned tasks fetched successfully")
     );
 });
 
@@ -274,4 +373,5 @@ export {
   getTaskById,
   reorderTaskInColumn,
   updateTaskStatus,
+  getAssignedTasks,
 };

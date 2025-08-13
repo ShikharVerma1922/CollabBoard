@@ -11,25 +11,26 @@ import {
   HiUsers,
   HiViewBoards,
   HiPlus,
+  HiChatAlt2,
 } from "react-icons/hi";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import {
   TbLayoutSidebarLeftCollapse,
   TbLayoutSidebarLeftExpand,
 } from "react-icons/tb";
+import { AiFillPlusCircle } from "react-icons/ai";
+import { SiGoogletasks } from "react-icons/si";
 import { getRandomColor } from "../../Helper/iconHelper.js";
 import CreateWorkspaceModel from "../Modals/CreateWorkspaceModal.jsx";
 import { useWorkspaceList } from "../../context/WorkspaceListContext.jsx";
 import { useAuth } from "../../context/authContext.jsx";
 
-const SideBar = () => {
+const SideBar = ({ toggleChatModal }) => {
   const { workspaceList, setWorkspaceList } = useWorkspaceList();
   const [expandedWorkspace, setExpandedWorkspace] = useState([]);
   const [isSBCollapsed, setIsSBCollapsed] = useState(false);
   const [showModel, setShowModal] = useState(false);
   const { logout } = useAuth();
-
-  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -91,19 +92,21 @@ const SideBar = () => {
       {/* Main sidebar content */}
       <div className=" pb-10 pt-2 text-[var(--text)] h-full flex flex-col justify-between align-middle mt-6 sm:mt-0">
         <div className="flex flex-col align-middle justify-center gap-2">
-          <h2
+          {/* <h2
             className={`flex items-middle gap-2 cursor-pointer hover:text-[var(--accent)] justify-around ${
               isSBCollapsed ? "sm:justify-around" : "sm:justify-start"
             }`}
           >
             <HiSearch className="text-xl self-center" />
             {!isSBCollapsed && <span className="hidden sm:block">Search</span>}
-          </h2>
+          </h2> */}
+
+          {/* Home page */}
           <NavLink
             to="/app"
             end
             className={({ isActive }) =>
-              `flex items-middle gap-2 cursor-pointer justify-around sm:${
+              `flex items-center gap-2 cursor-pointer justify-around sm:${
                 isSBCollapsed ? "justify-around" : "justify-start"
               } ${
                 isActive
@@ -115,6 +118,25 @@ const SideBar = () => {
           >
             <HiHome className="text-xl" />
             {!isSBCollapsed && <span className="hidden sm:block">Home</span>}
+          </NavLink>
+
+          {/* Assigne tasks page */}
+          <NavLink
+            to="/app/tasks"
+            end
+            className={({ isActive }) =>
+              `flex items-center gap-2 cursor-pointer justify-around sm:${
+                isSBCollapsed ? "justify-around" : "justify-start"
+              } ${
+                isActive
+                  ? "text-[var(--accent)] font-bold"
+                  : "hover:text-[var(--accent)]"
+              }`
+            }
+            onClick={() => setExpandedWorkspace([])}
+          >
+            <SiGoogletasks className="" />
+            {!isSBCollapsed && <span className="hidden sm:block">Tasks</span>}
           </NavLink>
           <hr
             className={`mt-2 border-[var(--border)] mr-0  sm:${
@@ -142,113 +164,146 @@ const SideBar = () => {
                 <HiPlus className="self-center" />
               </span>
             )}
-            <div className="mt-1 max-h-[60vh] overflow-y-auto">
-              {workspaceList.map((workspace) => {
-                const isExpanded = expandedWorkspace.includes(workspace._id);
-                return (
-                  <div
-                    key={workspace._id}
-                    className={`mb-2 justify-center align-middle overflow-x-hidden ${
-                      isExpanded
-                        ? `py-2 p-1 rounded bg-[var(--bg)] shadow-md sm:${
-                            isSBCollapsed ? "rounded" : "rounded-r-none"
-                          }`
-                        : ""
-                    } `}
-                  >
-                    {/* Workspace Title */}
-                    <h2
-                      className={`flex items-start justify-between w-full cursor-pointer hover:text-[var(--accent)] pr-1 pl-1 sm:${
-                        isSBCollapsed ? "justify-around" : "justify-between"
-                      } ${isExpanded ? "font-semibold" : ""}`}
-                      onClick={() => setExpandedWorkspace(workspace._id)}
+            {workspaceList.length === 0 ? (
+              <div
+                className="flex flex-col items-center justify-center bg-transparent hover:bg-[var(--surface)] p-3 mr-2 rounded-2xl cursor-pointer"
+                onClick={() => setShowModal(true)}
+              >
+                <AiFillPlusCircle className="text-3xl" />
+                <span className="text-[var(--muted-text)]">
+                  Create workspace
+                </span>
+              </div>
+            ) : (
+              <div className="mt-1 max-h-[60vh] overflow-y-auto">
+                {workspaceList.map((workspace) => {
+                  const isExpanded = expandedWorkspace.includes(workspace._id);
+                  return (
+                    <div
+                      key={workspace._id}
+                      className={`mb-2 justify-center align-middle overflow-x-hidden ${
+                        isExpanded
+                          ? `py-2 p-1 rounded bg-[var(--bg)] shadow-md sm:${
+                              isSBCollapsed ? "rounded" : "rounded-r-none"
+                            }`
+                          : ""
+                      } `}
                     >
-                      <div
-                        className={`flex gap-2 items-center min-w-0 ${
-                          isExpanded
-                            ? "hover:text-[var(--text)] cursor-default"
-                            : "hover:text-[var(-accent)]"
-                        }`}
+                      {/* Workspace Title */}
+                      <h2
+                        className={`flex items-start justify-between w-full cursor-pointer hover:text-[var(--accent)] pr-1 pl-1 sm:${
+                          isSBCollapsed ? "justify-around" : "justify-between"
+                        } ${isExpanded ? "font-semibold" : ""}`}
+                        onClick={() => setExpandedWorkspace(workspace._id)}
                       >
                         <div
-                          className="min-w-6 h-6 rounded text-black flex items-center justify-center text-xs font-semibold"
-                          style={{
-                            backgroundImage: `linear-gradient(135deg, ${getRandomColor(
-                              workspace._id
-                            )}, var(--bg))`,
-                          }}
+                          className={`flex gap-2 items-center min-w-0 ${
+                            isExpanded
+                              ? "hover:text-[var(--text)] cursor-default"
+                              : "hover:text-[var(-accent)]"
+                          }`}
                         >
-                          {workspace.title.slice(0, 1).toUpperCase()}
-                        </div>
-                        {!isSBCollapsed && (
-                          <span className="hidden sm:block self-center truncate overflow-hidden whitespace-nowrap">
-                            {workspace.title}
-                          </span>
-                        )}
-                      </div>
-                      {!isSBCollapsed && (
-                        <span className="hidden sm:block self-center">
-                          {isExpanded ? (
-                            ""
-                          ) : (
-                            <RiArrowDropDownLine className="text-2xl" />
-                          )}
-                        </span>
-                      )}
-                    </h2>
-
-                    {/* Board and Members */}
-                    {isExpanded && (
-                      <div
-                        className={
-                          "mt-3 flex flex-col justify-center ml-0 gap-2 " +
-                          (isSBCollapsed ? "sm:ml-0" : "sm:ml-7")
-                        }
-                      >
-                        <NavLink
-                          to={`/app/workspace/${workspace._id}`}
-                          end
-                          className={({ isActive }) =>
-                            `flex justify-around gap-2 cursor-pointer sm:${
-                              isSBCollapsed ? "justify-around" : "justify-start"
-                            } ${
-                              isActive
-                                ? "text-[var(--accent)] font-semibold"
-                                : "hover:text-[var(--accent)]"
-                            }`
-                          }
-                        >
-                          <HiViewBoards className="text-lg self-center" />
+                          <div
+                            className="min-w-6 h-6 rounded text-black flex items-center justify-center text-xs font-semibold"
+                            style={{
+                              backgroundImage: `linear-gradient(135deg, ${getRandomColor(
+                                workspace._id
+                              )}, var(--bg))`,
+                            }}
+                          >
+                            {workspace.title.slice(0, 1).toUpperCase()}
+                          </div>
                           {!isSBCollapsed && (
-                            <span className="hidden sm:block self-center">
-                              Boards
+                            <span className="hidden sm:block self-center truncate overflow-hidden whitespace-nowrap">
+                              {workspace.title}
                             </span>
                           )}
-                        </NavLink>
-                        <NavLink
-                          to={`/app/workspace/${workspace._id}/members`}
-                          end
-                          className={({ isActive }) =>
-                            `flex justify-around gap-2 cursor-pointer sm:${
-                              isSBCollapsed ? "justify-around" : "justify-start"
-                            } ${
-                              isActive
-                                ? "text-[var(--accent)] font-semibold"
-                                : "hover:text-[var(--accent)]"
-                            }`
+                        </div>
+                        {!isSBCollapsed && (
+                          <span className="hidden sm:block self-center">
+                            {isExpanded ? (
+                              ""
+                            ) : (
+                              <RiArrowDropDownLine className="text-2xl" />
+                            )}
+                          </span>
+                        )}
+                      </h2>
+
+                      {/* Board and Members */}
+                      {isExpanded && (
+                        <div
+                          className={
+                            "mt-3 flex flex-col justify-center ml-0 gap-2 " +
+                            (isSBCollapsed ? "sm:ml-0" : "sm:ml-7")
                           }
                         >
-                          <HiUsers className="text-lg self-center" />
-                          {!isSBCollapsed && (
-                            <span className="hidden sm:block">Members</span>
-                          )}
-                        </NavLink>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                          <NavLink
+                            to={`/app/workspace/${workspace._id}`}
+                            end
+                            className={({ isActive }) =>
+                              `flex justify-around gap-2 cursor-pointer sm:${
+                                isSBCollapsed
+                                  ? "justify-around"
+                                  : "justify-start"
+                              } ${
+                                isActive
+                                  ? "text-[var(--accent)] font-semibold"
+                                  : "hover:text-[var(--accent)]"
+                              }`
+                            }
+                          >
+                            <HiViewBoards className="text-lg self-center" />
+                            {!isSBCollapsed && (
+                              <span className="hidden sm:block self-center">
+                                Boards
+                              </span>
+                            )}
+                          </NavLink>
+                          <NavLink
+                            to={`/app/workspace/${workspace._id}/members`}
+                            end
+                            className={({ isActive }) =>
+                              `flex justify-around gap-2 cursor-pointer sm:${
+                                isSBCollapsed
+                                  ? "justify-around"
+                                  : "justify-start"
+                              } ${
+                                isActive
+                                  ? "text-[var(--accent)] font-semibold"
+                                  : "hover:text-[var(--accent)]"
+                              }`
+                            }
+                          >
+                            <HiUsers className="text-lg self-center" />
+                            {!isSBCollapsed && (
+                              <span className="hidden sm:block">Members</span>
+                            )}
+                          </NavLink>
+                          <button
+                            onClick={() =>
+                              toggleChatModal(workspace._id, workspace.title)
+                            }
+                            className={`
+                            flex justify-around gap-2 cursor-pointer sm:${
+                              isSBCollapsed ? "justify-around" : "justify-start"
+                            } hover:text-[var(--accent)] text-left w-full
+                           `}
+                          >
+                            <HiChatAlt2 className="text-xl self-center" />
+                            {!isSBCollapsed && (
+                              <span className="hidden sm:block">
+                                General Chat
+                              </span>
+                            )}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
         <div

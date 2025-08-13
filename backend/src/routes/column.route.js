@@ -46,5 +46,20 @@ router.get(
   requireColumnAccess,
   getColumnById
 );
+router.post(
+  "/:columnId/reorder",
+  verifyJWT,
+  requireMember,
+  requireBoardAccess,
+  requireColumnAccess,
+  async (req, res) => {
+    // Implement your reorder logic here
+    // Example: req.body.taskOrder = [array of task IDs]
+    // You may want to move this logic to a controller if needed
+    return res
+      .status(200)
+      .json({ success: true, message: "Column reordered (stub)!" });
+  }
+);
 
 export default router;
