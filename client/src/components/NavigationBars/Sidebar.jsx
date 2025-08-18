@@ -20,6 +20,7 @@ import {
 } from "react-icons/tb";
 import { AiFillPlusCircle } from "react-icons/ai";
 import { SiGoogletasks } from "react-icons/si";
+import { FaSuitcase } from "react-icons/fa";
 import { getRandomColor } from "../../Helper/iconHelper.js";
 import CreateWorkspaceModel from "../Modals/CreateWorkspaceModal.jsx";
 import { useWorkspaceList } from "../../context/WorkspaceListContext.jsx";
@@ -146,9 +147,12 @@ const SideBar = ({ toggleChatModal }) => {
           <div>
             {!isSBCollapsed ? (
               <div className="flex justify-between sm:pr-4 sm:pl-1 sm:rounded-md sm:py-2 group sm:hover:bg-[var(--bg)]">
-                <span className="text-[13px] hidden sm:block font-bold">
-                  Workspaces
-                </span>
+                <div className="flex gap-2 items-center">
+                  <FaSuitcase />
+                  <span className="text-md hidden sm:block font-bold">
+                    Workspaces
+                  </span>
+                </div>
                 <span
                   className="text-xl sm:hidden flex justify-center border rounded ml-2 my-2 w-6 h-6 font-bold sm:group-hover:block hover:text-[var(--accent)] cursor-pointer sm:ml:0 sm:mb-0 sm:mt-0 sm:border-none sm:pr-4 sm:h-4"
                   onClick={() => setShowModal(true)}

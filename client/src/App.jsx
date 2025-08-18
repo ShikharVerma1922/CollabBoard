@@ -21,6 +21,7 @@ import AssignedTasks from "./pages/App/AssignedTasks.jsx";
 import { WorkspaceListProvider } from "./context/WorkspaceListContext.jsx";
 import { Toaster } from "react-hot-toast";
 import ChatModal from "./components/Chat/ChatModal.jsx";
+import BoardActivitiesPage from "./pages/App/BoardActivitiesPage.jsx";
 
 function App() {
   const { loadingUser, user } = useAuth();
@@ -57,6 +58,10 @@ function App() {
                   <Route
                     path="workspace/:workspaceId/board/:boardId"
                     element={<BoardPage />}
+                  />
+                  <Route
+                    path="workspace/:workspaceId/board/:boardId/activity"
+                    element={<BoardActivitiesPage />}
                   />
                   <Route
                     path="workspace/:workspaceId/members"

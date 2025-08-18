@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { ACTIVITY_TYPES_VALUES } from "../constants.js";
 
 const activitySchema = new Schema(
   {
@@ -19,7 +20,7 @@ const activitySchema = new Schema(
     },
     type: {
       type: String,
-      enum: [],
+      enum: ACTIVITY_TYPES_VALUES,
       required: true,
     },
     target: {

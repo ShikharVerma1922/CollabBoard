@@ -11,6 +11,7 @@ import columnRoutes from "./routes/column.route.js";
 import taskRoutes from "./routes/task.route.js";
 import messageRoutes from "./routes/message.route.js";
 import commentRoutes from "./routes/comment.route.js";
+import activityRoutes from "./routes/activites.route.js";
 import { attachIO } from "./middlewares/attachIO.middleware.js";
 
 function initApp(io) {
@@ -45,6 +46,7 @@ function initApp(io) {
     "/api/v1/workspaces/:workspaceId/boards/:boardId/columns/:columnId/tasks/:taskId/comments",
     commentRoutes
   );
+  app.use("/api/v1/workspaces/:workspaceId/activities", activityRoutes);
 
   // error handling middleware
   app.use(errorHandler);

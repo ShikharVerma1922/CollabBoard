@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useWorkspace } from "../../context/WorkspaceContext.jsx";
 import ColumnCard from "../../components/Cards/ColumnCard.jsx";
@@ -8,7 +8,7 @@ import CreateColumnModal from "../../components/Modals/CreateColumnModal.jsx";
 import socket from "../../services/socket.js";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext.jsx";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 import { FaRegStar, FaStar } from "react-icons/fa";
 
 const BoardPage = () => {
@@ -20,6 +20,7 @@ const BoardPage = () => {
   const [isFavourite, setIsFavourite] = useState(false);
   const [searchParams] = useSearchParams();
   const highlightTaskId = searchParams.get("task");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBoard = async () => {
@@ -186,6 +187,14 @@ const BoardPage = () => {
             />
           )}
         </span>
+        <button
+          onClick={() =>
+            navigate(`/app/workspace/${workspaceId}/board/${boardId}/activity`)
+          }
+          className="ml-2 px-3 py-1 rounded bg-[var(--accent-surface)] text-[var(--text)] hover:bg-[var(--accent-hover)] transition"
+        >
+          Activity
+        </button>
       </div>
       <p className="mb-4 text-sm text-gray-400">{board.description}</p>
 
@@ -195,25 +204,7 @@ const BoardPage = () => {
 
           if (!destination) return;
 
-          if (type === "COLUMN") {
-            const updatedColumns = Array.from(board.columns);
-            const [moved] = updatedColumns.splice(source.index, 1);
-            updatedColumns.splice(destination.index, 0, moved);
-
-            setBoard({ ...board, columns: updatedColumns });
-
-            try {
-              await axios.patch("/api/reorder-columns", {
-                boardId: board._id,
-                columnOrder: updatedColumns.map((col) => col._id),
-              });
-            } catch (err) {
-              console.error("Column reorder failed", err);
-              toast.error("Failed to reorder columns");
-            }
-
-            return;
-          }
+          // Removed handling for COLUMN type drag and drop
 
           const sourceCol = board.columns.find(
             (c) => c._id === source.droppableId
@@ -297,41 +288,29 @@ const BoardPage = () => {
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              {board?.columns?.map((column, index) => (
-                <Draggable
-                  draggableId={column._id}
-                  index={index}
-                  key={column._id}
-                >
-                  {(provided) => (
-                    <div
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      ref={provided.innerRef}
-                    >
-                      <Droppable droppableId={column._id} type="TASK">
-                        {(dropProvided, dropSnapshot) => (
-                          <div
-                            ref={dropProvided.innerRef}
-                            {...dropProvided.droppableProps}
-                          >
-                            <ColumnCard
-                              title={column.title}
-                              color={column.color}
-                              description={column.description}
-                              visibility={column.visibility}
-                              columnId={column._id}
-                              tasks={column.tasks}
-                              isDraggingOver={dropSnapshot.isDraggingOver}
-                              highlightTaskId={highlightTaskId}
-                            />
-                            {dropProvided.placeholder}
-                          </div>
-                        )}
-                      </Droppable>
-                    </div>
-                  )}
-                </Draggable>
+              {board?.columns?.map((column) => (
+                <div key={column._id}>
+                  <Droppable droppableId={column._id} type="TASK">
+                    {(dropProvided, dropSnapshot) => (
+                      <div
+                        ref={dropProvided.innerRef}
+                        {...dropProvided.droppableProps}
+                      >
+                        <ColumnCard
+                          title={column.title}
+                          color={column.color}
+                          description={column.description}
+                          visibility={column.visibility}
+                          columnId={column._id}
+                          tasks={column.tasks}
+                          isDraggingOver={dropSnapshot.isDraggingOver}
+                          highlightTaskId={highlightTaskId}
+                        />
+                        {dropProvided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </div>
               ))}
               {provided.placeholder}
               <div>

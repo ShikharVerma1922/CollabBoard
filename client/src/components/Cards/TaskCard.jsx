@@ -104,7 +104,8 @@ const TaskCard = ({
               loading ? "cursor-progress opacity-70" : "cursor-pointer"
             }`}
           >
-            <div className="flex gap-2 items-start">
+            {/* title status-button drag-n-drop*/}
+            <div className="flex gap-2 items-center">
               {showStatusUpdateButton ? (
                 <div
                   className={`transition-[opacity,width] duration-300 ease-in-out  group-hover:opacity-100 group-hover:w-4 overflow-hidden ${
@@ -147,7 +148,7 @@ const TaskCard = ({
                     highlight
                       ? "text-white dark:text-black"
                       : "text-[var(--text)]"
-                  } font-semibold text-sm truncate max-w-50 mb-1`}
+                  } font-semibold text-sm truncate max-w-50`}
                 >
                   {title}
                 </h3>
@@ -157,8 +158,40 @@ const TaskCard = ({
                 </p>
               )} */}
               </div>
-              <div {...provided.dragHandleProps} className="cursor-grab">
-                <LuGripVertical className="text-gray-400" />
+              <div>
+                <div className="flex gap-1 items-center ml-2">
+                  {user._id === createdBy && (
+                    <p
+                      className="text-sm text-[var(--muted-text)]"
+                      data-tooltip-id="my-tooltip"
+                      data-tooltip-content="Added by you"
+                      data-tooltip-place="bottom"
+                      data-tooltip-variant="info"
+                    >
+                      <FaUserEdit></FaUserEdit>
+                    </p>
+                  )}
+                  {user._id === assignedTo && (
+                    <p
+                      className="text-sm text-[var(--success)] max-w-full cursor-default"
+                      data-tooltip-id="my-tooltip"
+                      data-tooltip-content="Assigned to you"
+                      data-tooltip-place="bottom"
+                      data-tooltip-variant="info"
+                    >
+                      <MdAssignmentInd></MdAssignmentInd>
+                    </p>
+                  )}
+                </div>
+
+                {showStatusUpdateButton && (
+                  <div
+                    {...provided.dragHandleProps}
+                    className="cursor-grab absolute top-3 right-1"
+                  >
+                    <LuGripVertical className="text-gray-400" />
+                  </div>
+                )}
               </div>
             </div>
             {/* Due in */}
@@ -176,7 +209,7 @@ const TaskCard = ({
 
                   return (
                     <p
-                      className={`text-xs w-full ml-3 ${
+                      className={`text-xs w-full ml-2 mt-1 ${
                         diffDays < 0
                           ? "text-[var(--error)]"
                           : diffDays <= 7
@@ -190,31 +223,11 @@ const TaskCard = ({
                     </p>
                   );
                 })()}
-              <div className="absolute right-2 bottom-4 flex gap-1 items-center">
-                {user._id === assignedTo && (
-                  <p
-                    className="text-md text-[var(--success)] max-w-full cursor-default"
-                    data-tooltip-id="my-tooltip"
-                    data-tooltip-content="Assigned to you"
-                    data-tooltip-place="bottom"
-                    data-tooltip-variant="info"
-                  >
-                    <MdAssignmentInd></MdAssignmentInd>
-                  </p>
-                )}
-                {user._id === createdBy && (
-                  <p
-                    className="text-sm text-[var(--muted-text)]"
-                    data-tooltip-id="my-tooltip"
-                    data-tooltip-content="Added by you"
-                    data-tooltip-place="bottom"
-                    data-tooltip-variant="info"
-                  >
-                    <FaUserEdit></FaUserEdit>
-                  </p>
-                )}
-                <Tooltip id="my-tooltip" />
-              </div>
+              {/* <div className="flex gap-1 items-center">
+                <div {...provided.dragHandleProps} className="cursor-grab">
+                  <LuGripVertical className="text-gray-400" />
+                </div>
+              </div> */}
             </div>
           </div>
         )}

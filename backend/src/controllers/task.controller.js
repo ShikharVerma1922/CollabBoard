@@ -1,3 +1,5 @@
+import { ACTIVITY_TYPES } from "../constants.js";
+import { Activity } from "../models/activity.model.js";
 import { Column } from "../models/column.model.js";
 import { Comment } from "../models/comment.model.js";
 import { Task } from "../models/task.model.js";
@@ -36,6 +38,17 @@ const createTask = asyncHandler(async (req, res) => {
 
   column.tasks.push(task._id);
   await column.save();
+
+  // log activity
+  await Activity.create({
+    actor: userId,
+    workspace: req.workspace._id,
+    board: req.board._id,
+    type: ACTIVITY_TYPES.CREATE_TASK,
+    target: task._id,
+    targetModel: "Task",
+    message: `Task "${task.title}" was created by ${req.user.username}.`,
+  });
 
   try {
     console.log("Emitting 'task-created' to board:", req.board._id.toString());
@@ -102,6 +115,17 @@ const updateTaskMetadata = asyncHandler(async (req, res) => {
 
   req.io?.to(req.board._id.toString())?.emit("task-updated", task);
 
+  // log activity
+  await Activity.create({
+    actor: userId,
+    workspace: req.workspace._id,
+    board: req.board._id,
+    type: ACTIVITY_TYPES.UPDATE_TASK,
+    target: task._id,
+    targetModel: "Task",
+    message: `Task "${task.title}" was updated by ${req.user.username}.`,
+  });
+
   return res
     .status(200)
     .json(new ApiResponse(200, task, "Task updated successfully"));
@@ -135,6 +159,19 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
     task,
     taskCompleted,
     updatedBy: req.user.username,
+  });
+
+  // log activity
+  await Activity.create({
+    actor: userId,
+    workspace: req.workspace._id,
+    board: req.board._id,
+    type: ACTIVITY_TYPES.UPDATE_TASK_STATUS,
+    target: task._id,
+    targetModel: "Task",
+    message: taskCompleted
+      ? `Task "${task.title}" was marked as complete by ${req.user.username}.`
+      : `Task "${task.title}" was reopened by ${req.user.username}.`,
   });
 
   return res
@@ -192,6 +229,17 @@ const moveTaskToColumn = asyncHandler(async (req, res) => {
     position: task.position,
   });
 
+  // log activity
+  await Activity.create({
+    actor: userId,
+    workspace: req.workspace._id,
+    board: req.board._id,
+    type: ACTIVITY_TYPES.MOVE_TASK,
+    target: task._id,
+    targetModel: "Task",
+    message: `Task "${task.title}" was moved to column "${nextColumn.title}" by ${req.user.username}.`,
+  });
+
   return res
     .status(200)
     .json(new ApiResponse(200, task, "Task moved successfully"));
@@ -221,6 +269,17 @@ const deleteTask = asyncHandler(async (req, res) => {
   req.io
     ?.to(req.board._id.toString())
     ?.emit("task-deleted", { taskId: task._id });
+
+  // log activity
+  await Activity.create({
+    actor: userId,
+    workspace: req.workspace._id,
+    board: req.board._id,
+    type: ACTIVITY_TYPES.DELETE_TASK,
+    target: task._id,
+    targetModel: "Task",
+    message: `Task "${task.title}" was deleted by ${req.user.username}.`,
+  });
 
   return res
     .status(200)

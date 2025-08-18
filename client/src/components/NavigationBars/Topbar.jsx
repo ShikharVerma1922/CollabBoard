@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useWorkspace } from "../../context/WorkspaceContext.jsx";
 import { FiBell, FiUser } from "react-icons/fi";
 import { RiArrowDropDownFill } from "react-icons/ri";
@@ -12,15 +12,16 @@ const Topbar = () => {
   const pathSegments = location.pathname.split("/").filter(Boolean);
   const isDashboard = pathSegments.length === 0;
   const { workspace, board } = useWorkspace();
+  const { workspaceId, boardId } = useParams();
   const { user, loadingUser } = useAuth();
   const navigate = useNavigate();
 
   let workspaceBC = "";
   let boardBC = "";
   if (pathSegments[1] === "workspace") {
-    workspaceBC = workspace?.title;
+    workspaceBC = workspace?.title || workspaceId;
     if (pathSegments[3] === "board" && pathSegments[4]) {
-      boardBC = board?.title;
+      boardBC = board?.title || boardId;
     }
   } else if (pathSegments[1] === "tasks") {
     workspaceBC = "Tasks";
@@ -34,13 +35,23 @@ const Topbar = () => {
           onClick={() =>
             workspaceBC !== "Tasks" &&
             workspaceBC !== "Dashboard" &&
-            navigate(`/app/workspace/${workspace._id}`)
+            navigate(`/app/workspace/${workspace._id || workspaceId}`)
           }
           className="cursor-pointer"
         >
           {workspaceBC}
         </span>
-        {`${boardBC ? " / " + boardBC : ""}`}
+        {boardBC && (
+          <span
+            onClick={() =>
+              navigate(`/app/workspace/${workspaceId}/board/${boardId}`)
+            }
+            className="cursor-pointer"
+          >
+            {" "}
+            / {boardBC}
+          </span>
+        )}
       </h2>
       <div className="flex gap-1">
         <ThemeToggle />
