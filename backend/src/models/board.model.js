@@ -32,10 +32,6 @@ const boardSchema = new Schema(
         ref: "Column",
       },
     ],
-    lastOpenedAt: {
-      type: Date,
-      default: Date.now,
-    },
     favourite: {
       type: [
         {

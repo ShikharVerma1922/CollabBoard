@@ -193,14 +193,20 @@ const getRecentBoards = asyncHandler(async (req, res) => {
     .select("board")
     .lean();
 
-  const boardIds = boardActivities.map((act) => act.board);
+  const boardIds = boardActivities.map((act) => act.board.toString());
 
-  const recentBoards = await Board.find({ _id: { $in: boardIds } })
+  let recentBoards = await Board.find({ _id: { $in: boardIds } })
     .populate({
       path: "workspace",
       select: "_id title",
     })
-    .select("-columns -createdBy");
+    .select("-columns -createdBy")
+    .lean();
+
+  // Sort boards to match the order of boardIds
+  recentBoards = boardIds
+    .map((id) => recentBoards.find((b) => b._id.toString() === id))
+    .filter(Boolean);
 
   return res
     .status(200)

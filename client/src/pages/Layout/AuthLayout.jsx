@@ -1,4 +1,4 @@
-import { Outlet, Link, NavLink } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
 import ThemeToggle from "../../components/theme/ThemeToggle";
 import { useEffect, useState } from "react";
 
@@ -39,12 +39,22 @@ const AuthLayout = ({ children }) => {
     return () => window.removeEventListener("resize", closeMenu);
   }, []);
 
+  // Smooth scroll to section
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+    setMenuOpen(false);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[var(--bg)]">
       <nav
-        className={`w-full bg-[var(--bg)] py-3 px-6 transition-shadow ${
+        className={`fixed top-0 left-0 w-full bg-[var(--bg)] py-3 px-6 transition-shadow z-50 ${
           scrolled ? "shadow-md" : ""
         }`}
+        style={{ position: "fixed" }}
       >
         <div className="max-w-7xl mx-auto flex justify-between items-center relative">
           {/* Logo and Hamburger */}
@@ -91,45 +101,23 @@ const AuthLayout = ({ children }) => {
 
             {/* Desktop Nav */}
             <ul className="hidden md:flex space-x-6 font-semibold text-gray-700 dark:text-gray-200">
-              <NavLink
-                to="/features"
-                className={({ isActive }) =>
-                  `self-center transition ${
-                    isActive
-                      ? "text-[var(--accent)]"
-                      : "hover:text-[var(--accent)]"
-                  }`
-                }
+              <li
+                className="self-center cursor-pointer hover:text-[var(--accent)]"
+                onClick={() => scrollToSection("features")}
               >
                 Features
-              </NavLink>
-              <li className="self-center">
-                <NavLink
-                  to="/solutions"
-                  className={({ isActive }) =>
-                    `self-center transition ${
-                      isActive
-                        ? "text-[var(--accent)]"
-                        : "hover:text-[var(--accent)]"
-                    }`
-                  }
-                >
-                  Solutions
-                </NavLink>
               </li>
-              <li className="self-center">
-                <NavLink
-                  to="/resources"
-                  className={({ isActive }) =>
-                    `self-center transition ${
-                      isActive
-                        ? "text-[var(--accent)]"
-                        : "hover:text-[var(--accent)]"
-                    }`
-                  }
-                >
-                  Resources
-                </NavLink>
+              <li
+                className="self-center cursor-pointer hover:text-[var(--accent)]"
+                onClick={() => scrollToSection("solutions")}
+              >
+                Solutions
+              </li>
+              <li
+                className="self-center cursor-pointer hover:text-[var(--accent)]"
+                onClick={() => scrollToSection("resources")}
+              >
+                Resources
               </li>
             </ul>
           </div>
@@ -161,45 +149,24 @@ const AuthLayout = ({ children }) => {
           {menuOpen && (
             <div className="absolute top-full left-0 w-full bg-[var(--bg)] shadow-2xl z-50 md:hidden animate-fade-in flex flex-col justify-center items-center text-2xl">
               <ul className="flex flex-col space-y-2 py-4 px-6 font-semibold text-gray-700 dark:text-gray-200">
-                <NavLink
-                  to="/features"
-                  className={({ isActive }) =>
-                    `transition ${
-                      isActive
-                        ? "text-[var(--accent)]"
-                        : "hover:text-[var(--accent)]"
-                    }`
-                  }
-                  onClick={() => setMenuOpen(false)}
+                <li
+                  className="cursor-pointer hover:text-[var(--accent)]"
+                  onClick={() => scrollToSection("features")}
                 >
                   Features
-                </NavLink>
-                <NavLink
-                  to="/solutions"
-                  className={({ isActive }) =>
-                    `transition ${
-                      isActive
-                        ? "text-[var(--accent)]"
-                        : "hover:text-[var(--accent)]"
-                    }`
-                  }
-                  onClick={() => setMenuOpen(false)}
+                </li>
+                <li
+                  className="cursor-pointer hover:text-[var(--accent)]"
+                  onClick={() => scrollToSection("solutions")}
                 >
                   Solutions
-                </NavLink>
-                <NavLink
-                  to="/resources"
-                  className={({ isActive }) =>
-                    `transition ${
-                      isActive
-                        ? "text-[var(--accent)]"
-                        : "hover:text-[var(--accent)]"
-                    }`
-                  }
-                  onClick={() => setMenuOpen(false)}
+                </li>
+                <li
+                  className="cursor-pointer hover:text-[var(--accent)]"
+                  onClick={() => scrollToSection("resources")}
                 >
                   Resources
-                </NavLink>
+                </li>
                 <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
                 <li className="text-center">
                   <Link
@@ -224,7 +191,10 @@ const AuthLayout = ({ children }) => {
           )}
         </div>
       </nav>
-      <main className="flex-1 overflow-auto">
+      <main
+        className="flex-1 overflow-auto pt-20"
+        style={{ scrollBehavior: "smooth" }}
+      >
         <Outlet />
       </main>
     </div>
