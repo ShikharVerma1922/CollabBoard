@@ -2,7 +2,7 @@ import axios from "axios";
 import socket from "./socket.js";
 
 export const getCurrentUser = async () => {
-  const res = await axios.get("http://localhost:3000/api/v1/users/me", {
+  const res = await axios.get(`${import.meta.env.VITE_SERVER}/users/me`, {
     withCredentials: true, // crucial for cookie auth
   });
 

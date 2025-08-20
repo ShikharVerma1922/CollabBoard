@@ -22,6 +22,7 @@ import { WorkspaceListProvider } from "./context/WorkspaceListContext.jsx";
 import { Toaster } from "react-hot-toast";
 import ChatModal from "./components/Chat/ChatModal.jsx";
 import BoardActivitiesPage from "./pages/App/BoardActivitiesPage.jsx";
+import Profile from "./pages/App/Profile.jsx";
 
 function App() {
   const { loadingUser, user } = useAuth();
@@ -68,6 +69,7 @@ function App() {
                     element={<MembersPage />}
                   />
                   <Route path="settings" element={<SettingsPage />} />
+                  <Route path="profile" element={<Profile />} />
                   <Route path="chat" element={<ChatModal />} />
                 </Route>
               </Route>

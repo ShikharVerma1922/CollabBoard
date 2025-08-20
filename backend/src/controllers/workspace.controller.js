@@ -277,12 +277,13 @@ const removeMember = asyncHandler(async (req, res) => {
 const getWorkspaceMembers = asyncHandler(async (req, res) => {
   const workspace = await req.workspace.populate(
     "members",
-    "username fullName"
+    "username fullName avatar"
   );
   const memberList = workspace.members.map((member) => ({
     _id: member._id,
     username: member.username,
     fullName: member.fullName,
+    avatar: member.avatar,
     role: workspace.admins.some(
       (adminId) => adminId.toString() === member._id.toString()
     )

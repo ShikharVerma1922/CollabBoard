@@ -3,6 +3,7 @@ import { MdDelete } from "react-icons/md";
 import { useAuth } from "../../context/authContext.jsx";
 import { useParams } from "react-router-dom";
 import PopUpModal from "../Modals/PopUpModal.jsx";
+import { FaRegUser } from "react-icons/fa";
 import {
   confirmRemoveMember,
   confirmUpdateRoleStatus,
@@ -16,9 +17,22 @@ const MemberCard = ({ member, currentUserRole, setMembers }) => {
 
   return (
     <div className="border p-3 rounded bg-[var(--card)] flex justify-between items-center group">
-      <div>
-        <p className="font-medium">{member.fullName}</p>
-        <p className="text-sm text-gray-500">@{member.username}</p>
+      <div className="flex items-center gap-3">
+        {member.avatar ? (
+          <img
+            src={member.avatar}
+            alt={member.username + " avatar"}
+            className="w-9 h-9 object-cover rounded-full border border-gray-300 dark:border-zinc-700"
+          />
+        ) : (
+          <span className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-200 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700">
+            <FaRegUser className="text-[var(--muted-text)]" />
+          </span>
+        )}
+        <div>
+          <p className="font-medium">{member.fullName}</p>
+          <p className="text-sm text-gray-500">@{member.username}</p>
+        </div>
       </div>
       <div className="flex gap-2">
         {member._id === user._id && (

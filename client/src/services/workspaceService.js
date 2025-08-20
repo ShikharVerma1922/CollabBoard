@@ -23,6 +23,7 @@ const fetchMembers = async ({
       `${import.meta.env.VITE_SERVER}/workspaces/${workspaceId}/members`,
       { withCredentials: true }
     );
+    console.log(res.data.data.memberList);
     setMembers(res.data.data.memberList);
     setWorkspace(res.data.data.workspace);
     setCurrentUserRole(res.data.data.currentUserRole);

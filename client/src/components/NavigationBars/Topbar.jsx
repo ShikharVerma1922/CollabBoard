@@ -25,6 +25,8 @@ const Topbar = () => {
     }
   } else if (pathSegments[1] === "tasks") {
     workspaceBC = "Tasks";
+  } else if (pathSegments[1] === "profile") {
+    workspaceBC = "Account Profile";
   } else if (pathSegments[0] === "app") {
     workspaceBC = "Dashboard";
   }
@@ -66,21 +68,34 @@ const Topbar = () => {
           data-tooltip-id="below"
           data-tooltip-content="Account"
           className="cursor-pointer self-center flex items-center gap-2"
+          onClick={() => navigate("/app/profile")}
         >
           <span
-            className="bg-[var(--accent)] rounded-md p-2"
+            className="bg-[var(--accent)] rounded-full flex items-center justify-center"
             style={{
               backgroundImage: `linear-gradient(135deg, var(--text),  var(--bg))`,
+              overflow: "hidden",
+              width: "40px",
+              height: "40px",
             }}
           >
-            <FiUser className="text-2xl" />
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user.username + " avatar"}
+                className="w-full h-full object-cover rounded-md"
+                style={{ minWidth: 0, minHeight: 0 }}
+              />
+            ) : (
+              <FiUser className="text-2xl" />
+            )}
           </span>
           <div className="flex flex-col gap-0">
             <span className="font-semibold text-[var(--text)] text-sm">
-              {!loadingUser && user.username}
+              {!loadingUser && user.fullName}
             </span>
             <span className="text-[var(--muted-text)] text-xs">
-              {!loadingUser && user.fullName}
+              @{!loadingUser && user.username}
             </span>
           </div>
           <span className="text-2xl">
