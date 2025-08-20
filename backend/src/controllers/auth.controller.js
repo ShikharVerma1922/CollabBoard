@@ -204,10 +204,25 @@ const getCurrentUser = asyncHandler(async (req, res) => {
   );
 });
 
+const updateFullName = asyncHandler(async (req, res) => {
+  const { fullName } = req.body;
+  const userId = req.user._id;
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { fullName: fullName },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Full Name updated successfully"));
+});
+
 export {
   registerUser,
   loginUser,
   logoutUser,
   refreshAccessToken,
   getCurrentUser,
+  updateFullName,
 };
