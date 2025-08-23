@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
 
 const Profile = () => {
-  const { user, setUser } = useAuth(null);
+  const { user, setUser, logout } = useAuth(null);
   const [loading, setLoading] = useState(false);
   const [editName, setEditName] = useState(false);
   const [newFullName, setNewFullName] = useState("");
@@ -14,22 +14,6 @@ const Profile = () => {
   const [nameSaving, setNameSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState("");
   const [deleteError, setDeleteError] = useState("");
-
-  //   useEffect(() => {
-  //     const fetchUser = async () => {
-  //       setLoading(true);
-  //       try {
-  //         const res = await axios.get(`${import.meta.env.VITE_SERVER}/users/me`, {
-  //           withCredentials: true,
-  //         });
-  //         setUser(res.data.data.user);
-  //       } catch (err) {
-  //         setUser(null);
-  //       }
-  //       setLoading(false);
-  //     };
-  //     fetchUser();
-  //   }, []);
 
   const handleFullNameUpdate = async () => {
     setNameSaving(true);
@@ -45,23 +29,6 @@ const Profile = () => {
       toast.error("Failed to update full name.");
     }
     setNameSaving(false);
-  };
-
-  const handleAvatarUpdate = async () => {
-    if (!avatarFile) return;
-    setAvatarUploading(true);
-    const formData = new FormData();
-    formData.append("avatar", avatarFile);
-    try {
-      const res = await axios.patch(
-        `${import.meta.env.VITE_SERVER}/users/avatar`,
-        formData,
-        { withCredentials: true }
-      );
-      setUser((u) => ({ ...u, avatar: res.data.data.avatar }));
-      setAvatarFile(null);
-    } catch (err) {}
-    setAvatarUploading(false);
   };
 
   const handleDeleteAccount = async () => {
@@ -90,7 +57,7 @@ const Profile = () => {
     );
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white dark:bg-zinc-900 rounded-xl shadow mt-8">
+    <div className="max-w-md mx-auto p-6 bg-white dark:bg-zinc-900 rounded-xl shadow mt-8 flex flex-col">
       <div className="flex flex-col items-center gap-4 mb-6">
         <div className="relative group">
           {user.avatar ? (
@@ -244,7 +211,33 @@ const Profile = () => {
           </div>
         )}
       </div>
-      <div className="mt-8 border-t pt-6">
+      {/* Modern Logout Button above Delete Account */}
+      <div className="mt-8 mb-6">
+        <hr className="border-gray-200 dark:border-zinc-700 mb-6" />
+        <div className="flex justify-center">
+          <button
+            className="flex items-center gap-2 px-5 py-3 rounded-full bg-[var(--accent)] text-white font-semibold shadow-lg hover:brightness-110 transition text-base"
+            onClick={logout}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1"
+              />
+            </svg>
+            Log out
+          </button>
+        </div>
+      </div>
+      <div className="border-t pt-6">
         <label className="block font-semibold mb-2 text-red-600">
           Delete Account
         </label>

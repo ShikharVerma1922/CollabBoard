@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import dashBoardImg from "../../assets/illustration-dashboard2.svg";
-import chatImg from "../../assets/illustration-dashboard.png";
+import chatImg from "../../assets/team-chat.png";
 import { useNavigate } from "react-router-dom";
 
 const features = [

@@ -23,7 +23,10 @@ export const useLogin = ({
     setLoading(true);
 
     try {
-      const userData = await loginUser({ usernameOrEmail, password });
+      const userData = await loginUser({
+        usernameOrEmail: usernameOrEmail.trim(),
+        password,
+      });
 
       setUser(userData);
       console.log("User logged in successfully");
