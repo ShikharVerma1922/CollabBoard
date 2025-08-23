@@ -12,6 +12,14 @@ export const useLogin = ({
   return async (data) => {
     const { usernameOrEmail, password } = data;
 
+    if (usernameOrEmail?.trim() === "") {
+      setError("usernameOrEmail", {
+        type: "manual",
+        message: "Username or Email is required",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -19,7 +27,7 @@ export const useLogin = ({
 
       setUser(userData);
       console.log("User logged in successfully");
-     
+
       navigate("/app");
     } catch (err) {
       if (err.response && err.response.data) {
