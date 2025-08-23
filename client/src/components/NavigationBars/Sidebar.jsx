@@ -13,7 +13,7 @@ import {
   HiPlus,
   HiChatAlt2,
 } from "react-icons/hi";
-import { RiArrowDropDownLine } from "react-icons/ri";
+import { RiArrowDropDownFill, RiArrowDropDownLine } from "react-icons/ri";
 import {
   TbLayoutSidebarLeftCollapse,
   TbLayoutSidebarLeftExpand,
@@ -25,6 +25,7 @@ import { getRandomColor } from "../../Helper/iconHelper.js";
 import CreateWorkspaceModel from "../Modals/CreateWorkspaceModal.jsx";
 import { useWorkspaceList } from "../../context/WorkspaceListContext.jsx";
 import { useAuth } from "../../context/authContext.jsx";
+import { FiUser } from "react-icons/fi";
 
 const SideBar = ({ toggleChatModal }) => {
   const { workspaceList, setWorkspaceList } = useWorkspaceList();
@@ -32,6 +33,7 @@ const SideBar = ({ toggleChatModal }) => {
   const [isSBCollapsed, setIsSBCollapsed] = useState(false);
   const [showModel, setShowModal] = useState(false);
   const { logout } = useAuth();
+  const { user, loadingUser } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -147,11 +149,9 @@ const SideBar = ({ toggleChatModal }) => {
           <div>
             {!isSBCollapsed ? (
               <div className="flex justify-between sm:pr-4 sm:pl-1 sm:rounded-md sm:py-2 group sm:hover:bg-[var(--bg)]">
-                <div className="flex gap-2 items-center">
+                <div className="gap-2 items-center hidden sm:flex">
                   <FaSuitcase />
-                  <span className="text-md hidden sm:block font-bold">
-                    Workspaces
-                  </span>
+                  <span className="text-md  font-bold">Workspaces</span>
                 </div>
                 <span
                   className="text-xl sm:hidden flex justify-center border rounded ml-2 my-2 w-6 h-6 font-bold sm:group-hover:block hover:text-[var(--accent)] cursor-pointer sm:ml:0 sm:mb-0 sm:mt-0 sm:border-none sm:pr-4 sm:h-4"
@@ -310,7 +310,7 @@ const SideBar = ({ toggleChatModal }) => {
             )}
           </div>
         </div>
-        <div
+        {/* <div
           className={`flex flex-col gap-2 ${
             isSBCollapsed ? "mb-6 sm:mb-18" : "mb-8"
           }`}
@@ -341,6 +341,35 @@ const SideBar = ({ toggleChatModal }) => {
             <HiLogout className="text-xl" />
             {!isSBCollapsed && <span className="hidden sm:block">Logout</span>}
           </h3>
+        </div> */}
+        <div
+          data-tooltip-id="below"
+          data-tooltip-content="Account"
+          className={`cursor-pointer self-center flex sm:hidden items-center gap-2  ${
+            isSBCollapsed ? "mb-6 sm:mb-18" : "mb-8"
+          }`}
+          onClick={() => navigate("/app/profile")}
+        >
+          <span
+            className="bg-[var(--accent)] rounded-full flex items-center justify-center"
+            style={{
+              backgroundImage: `linear-gradient(135deg, var(--text),  var(--bg))`,
+              overflow: "hidden",
+              width: "35px",
+              height: "35px",
+            }}
+          >
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user.username + " avatar"}
+                className="w-full h-full object-cover rounded-md"
+                style={{ minWidth: 0, minHeight: 0 }}
+              />
+            ) : (
+              <FiUser className="text-2xl" />
+            )}
+          </span>
         </div>
       </div>
       {showModel && <CreateWorkspaceModel setShowModal={setShowModal} />}
