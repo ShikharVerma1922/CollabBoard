@@ -24,7 +24,7 @@ export const getCurrentUser = async () => {
 
 export const registerUser = async ({ username, email, password, fullName }) => {
   const res = await axios.post(
-    "http://localhost:3000/api/v1/users/register",
+    `${import.meta.env.VITE_SERVER}/users/register`,
     { username, email, password, fullName },
     { withCredentials: true }
   );
@@ -34,7 +34,7 @@ export const registerUser = async ({ username, email, password, fullName }) => {
 
 export const loginUser = async ({ usernameOrEmail, password }) => {
   const res = await axios.post(
-    "http://localhost:3000/api/v1/users/login",
+    `${import.meta.env.VITE_SERVER}/users/login`,
     {
       username: usernameOrEmail,
       email: usernameOrEmail,
