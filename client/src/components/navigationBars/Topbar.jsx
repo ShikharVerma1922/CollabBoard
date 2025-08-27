@@ -1,0 +1,110 @@
+import React from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useWorkspace } from "../../context/WorkspaceContext.jsx";
+import { FiBell, FiUser } from "react-icons/fi";
+import { RiArrowDropDownFill } from "react-icons/ri";
+
+import { useAuth } from "../../context/authContext.jsx";
+import ThemeToggle from "../theme/ThemeToggle.jsx";
+
+const Topbar = () => {
+  const location = useLocation();
+  const pathSegments = location.pathname.split("/").filter(Boolean);
+  const isDashboard = pathSegments.length === 0;
+  const { workspace, board } = useWorkspace();
+  const { workspaceId, boardId } = useParams();
+  const { user, loadingUser } = useAuth();
+  const navigate = useNavigate();
+
+  let workspaceBC = "";
+  let boardBC = "";
+  if (pathSegments[1] === "workspace") {
+    workspaceBC = workspace?.title || workspaceId;
+    if (pathSegments[3] === "board" && pathSegments[4]) {
+      boardBC = board?.title || boardId;
+    }
+  } else if (pathSegments[1] === "tasks") {
+    workspaceBC = "Tasks";
+  } else if (pathSegments[1] === "profile") {
+    workspaceBC = "Account Profile";
+  } else if (pathSegments[0] === "app") {
+    workspaceBC = "Dashboard";
+  }
+  return (
+    <nav className="w-full bg-[var(--accent-surface)] rounded-xl py-1.5 px-3 sticky top-0 z-10 shadow-md justify-between hidden sm:flex">
+      <h2 className="text-xl sm:text-base font-medium text-[var(--text)] self-center">
+        <span
+          onClick={() =>
+            workspaceBC !== "Tasks" &&
+            workspaceBC !== "Dashboard" &&
+            navigate(`/app/workspace/${workspace._id || workspaceId}`)
+          }
+          className="cursor-pointer"
+        >
+          {workspaceBC}
+        </span>
+        {boardBC && (
+          <span
+            onClick={() =>
+              navigate(`/app/workspace/${workspaceId}/board/${boardId}`)
+            }
+            className="cursor-pointer"
+          >
+            {" "}
+            / {boardBC}
+          </span>
+        )}
+      </h2>
+      <div className="flex gap-1">
+        <ThemeToggle />
+        <button
+          data-tooltip-id="below"
+          data-tooltip-content="Notifications"
+          className="border-l-2 border-[var(--border)] px-3"
+        >
+          <FiBell className="text-xl cursor-pointer " />
+        </button>
+        <div
+          data-tooltip-id="below"
+          data-tooltip-content="Account"
+          className="cursor-pointer self-center flex items-center gap-2"
+          onClick={() => navigate("/app/profile")}
+        >
+          <span
+            className="bg-[var(--accent)] rounded-full flex items-center justify-center"
+            style={{
+              backgroundImage: `linear-gradient(135deg, var(--text),  var(--bg))`,
+              overflow: "hidden",
+              width: "40px",
+              height: "40px",
+            }}
+          >
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user.username + " avatar"}
+                className="w-full h-full object-cover rounded-md"
+                style={{ minWidth: 0, minHeight: 0 }}
+              />
+            ) : (
+              <FiUser className="text-2xl" />
+            )}
+          </span>
+          <div className="flex flex-col gap-0">
+            <span className="font-semibold text-[var(--text)] text-sm">
+              {!loadingUser && user.fullName}
+            </span>
+            <span className="text-[var(--muted-text)] text-xs">
+              @{!loadingUser && user.username}
+            </span>
+          </div>
+          <span className="text-2xl">
+            <RiArrowDropDownFill />
+          </span>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Topbar;
