@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { MdOutlineRefresh } from "react-icons/md";
+import {
+  MdOutlineRefresh,
+  MdCreate,
+  MdUpdate,
+  MdMoveToInbox,
+  MdDelete,
+  MdCheckCircle,
+} from "react-icons/md";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
@@ -12,6 +19,65 @@ const activityTypeOptions = [
   { value: "DELETE_TASK", label: "Task Deleted" },
   { value: "UPDATE_TASK_STATUS", label: "Task status" },
 ];
+
+function getTypeMeta(type) {
+  switch (type) {
+    case "CREATE_TASK":
+      return {
+        icon: <MdCreate className="inline text-green-600 text-2xl" />,
+        label: "Task created",
+      };
+    case "UPDATE_TASK":
+      return {
+        icon: <MdUpdate className="inline text-yellow-600 text-2xl" />,
+        label: "Task updated",
+      };
+    case "MOVE_TASK":
+      return {
+        icon: <MdMoveToInbox className="inline text-blue-600 text-2xl" />,
+        label: "Task moved",
+      };
+    case "DELETE_TASK":
+      return {
+        icon: <MdDelete className="inline text-red-600 text-2xl" />,
+        label: "Task deleted",
+      };
+    case "UPDATE_TASK_STATUS":
+      return {
+        icon: <MdCheckCircle className="inline text-purple-600 text-2xl" />,
+        label: "Task status updated",
+      };
+    default:
+      return { icon: null, label: "Activity" };
+  }
+}
+
+function getInitials(name) {
+  if (!name) return "?";
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+function formatRelative(date) {
+  if (!date) return "";
+  const now = new Date();
+  const d = new Date(date);
+  const diff = now - d;
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60) return "just now";
+  if (minutes < 60) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+  if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+  if (days < 7) return `${days} day${days > 1 ? "s" : ""} ago`;
+  return d.toLocaleDateString();
+}
 
 function formatDateTime(iso) {
   if (!iso) return "";
@@ -89,9 +155,6 @@ const BoardActivitiesPage = () => {
   }, [workspaceId, boardId, page, activityType, dateFrom, dateTo]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-
-  // Timeline line color
-  const timelineLine = "border-l-2 border-gray-300";
 
   // Refresh handler
   const handleRefresh = () => {
@@ -182,60 +245,49 @@ const BoardActivitiesPage = () => {
                 </div>
               )}
               {Object.entries(groupedActivities).map(([date, acts]) => (
-                <div key={date}>
+                <div key={date} className="mb-8">
                   <div className="text-center text-sm font-semibold text-[var(--accent)] my-4">
                     {date}
                   </div>
-                  <ol className="relative">
-                    {acts.map((activity, idx) => (
-                      <li
-                        key={activity._id || idx}
-                        className={`flex items-start gap-4 relative pb-10 ${
-                          idx === acts.length - 1 ? "" : timelineLine
-                        }`}
-                      >
-                        {/* Timeline dot */}
-                        <span className="absolute left-0 top-0 -ml-3 flex items-center justify-center w-6 h-6 bg-white border-2 border-blue-400 rounded-full z-1">
-                          {activity.actor?.avatarUrl ? (
-                            <img
-                              src={activity.actor.avatarUrl}
-                              alt={activity.actor.fullName}
-                              className="w-5 h-5 rounded-full object-cover"
-                            />
-                          ) : (
-                            <span className="w-5 h-5 rounded-full flex items-center justify-center bg-blue-100 text-blue-600 text-xs font-bold">
-                              {activity.actor?.fullName
-                                ? activity.actor.fullName
-                                    .split(" ")
-                                    .map((w) => w[0])
-                                    .join("")
-                                    .slice(0, 2)
-                                : "?"}
-                            </span>
-                          )}
-                        </span>
-                        {/* Card */}
-                        <div className="ml-6 flex-1">
-                          <div className="flex items-center gap-1">
-                            <span className="font-semibold text-[var(--text)]">
-                              {activity.actor?.fullName || "Someone"}
-                            </span>
-                            <span className="text-[var(--muted-text)] mr-2">
-                              @{activity.actor?.username || ""}
-                            </span>
-                            <span className="text-xs px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-100 border border-blue-100">
-                              {activity.type || "Activity"}
-                            </span>
+                  <ol className="relative border-l border-gray-300 dark:border-gray-700">
+                    {acts.map((activity, idx) => {
+                      const { icon, label } = getTypeMeta(activity.type);
+                      return (
+                        <li key={activity._id || idx} className="mb-6 ml-6">
+                          <span className="absolute -left-4 flex items-center justify-center w-8 h-8 bg-white border-2 border-blue-400 rounded-full">
+                            {icon}
+                          </span>
+                          <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="flex items-center gap-1 flex-wrap">
+                                <span className="px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-sm font-medium text-[var(--text)]">
+                                  {activity.target?.column?.title ||
+                                    "Unknown column"}
+                                </span>
+                                <span className="text-gray-500">→</span>
+                                <span className="px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-sm font-medium text-[var(--text)]">
+                                  {activity.target?.title || "Untitled task"}
+                                </span>
+                              </div>
+                              <span className="ml-auto text-xs px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-100 border border-blue-100">
+                                {label}
+                              </span>
+                            </div>
+                            <div className="text-[var(--text)] text-sm mb-1">
+                              {activity.message || ""}
+                            </div>
+
+                            <div className="mt-1 text-xs text-[var(--muted-text)]">
+                              {activity.actor?.fullName || "Someone"} @
+                              {activity.actor?.username || ""}
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              {formatRelative(activity.createdAt)}
+                            </div>
                           </div>
-                          <div className="text-[var(--text)] mt-1 mb-1 text-sm">
-                            {activity.message || ""}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            {formatDateTime(activity.createdAt)}
-                          </div>
-                        </div>
-                      </li>
-                    ))}
+                        </li>
+                      );
+                    })}
                   </ol>
                 </div>
               ))}

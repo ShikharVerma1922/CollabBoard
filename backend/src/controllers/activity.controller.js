@@ -43,7 +43,14 @@ const getBoardActivities = asyncHandler(async (req, res) => {
       select: "title",
     })
     .populate({ path: "board", select: "title" })
-    .populate({ path: "target", select: "title" })
+    .populate({
+      path: "target",
+      select: "title",
+      populate: {
+        path: "column",
+        select: "title",
+      },
+    })
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit);

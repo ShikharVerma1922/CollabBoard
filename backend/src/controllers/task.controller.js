@@ -47,7 +47,7 @@ const createTask = asyncHandler(async (req, res) => {
     type: ACTIVITY_TYPES.CREATE_TASK,
     target: task._id,
     targetModel: "Task",
-    message: `Task "${task.title}" was created by ${req.user.username}.`,
+    message: `Task "${task.title}" was created by @${req.user.username}.`,
   });
 
   try {
@@ -91,13 +91,15 @@ const updateTaskMetadata = asyncHandler(async (req, res) => {
       throw new ApiError(400, "Task title cannot be empty");
     }
     activityMessages.push(
-      `Title changed from "${task.title}" to "${title}" by ${req.user.username}.`
+      `Title changed from "${task.title}" to "${title}" by @${req.user.username}.`
     );
     task.title = title;
   }
 
   if (description !== undefined && description !== task.description) {
-    activityMessages.push(`Description updated by ${req.user.username}.`);
+    activityMessages.push(
+      `Description of task ${task.title} updated by @${req.user.username}.`
+    );
     task.description = description;
   }
 
@@ -111,9 +113,9 @@ const updateTaskMetadata = asyncHandler(async (req, res) => {
       parsedDate.getTime() !== new Date(task.dueDate).getTime()
     ) {
       activityMessages.push(
-        `Due date changed from "${
+        `Due date for task ${task.title} changed from "${
           task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "None"
-        }" to "${parsedDate.toLocaleDateString()}" by ${req.user.username}.`
+        }" to "${parsedDate.toLocaleDateString()}" by @${req.user.username}.`
       );
       task.dueDate = parsedDate;
     }
@@ -129,14 +131,14 @@ const updateTaskMetadata = asyncHandler(async (req, res) => {
       throw new ApiError(404, "Assignee does not exists");
     }
     activityMessages.push(
-      `Task reassigned from user ID "${task.assignedTo}" to "${assignedTo}" by ${req.user.username}.`
+      `Task ${task.title} reassigned to "@${checkAssignedToUser.username}" by @${req.user.username}.`
     );
     task.assignedTo = assignedTo;
   }
 
   if (completed !== undefined && completed !== task.completed) {
     activityMessages.push(
-      `Completion status changed from "${task.completed}" to "${completed}" by ${req.user.username}.`
+      `Completion status of task ${task.title} changed from "${task.completed}" to "${completed}" by @${req.user.username}.`
     );
     task.completed = completed;
   }
@@ -214,8 +216,8 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
     target: task._id,
     targetModel: "Task",
     message: taskCompleted
-      ? `Task "${task.title}" was marked as complete by ${req.user.username}.`
-      : `Task "${task.title}" was reopened by ${req.user.username}.`,
+      ? `Task "${task.title}" was marked as complete by @${req.user.username}.`
+      : `Task "${task.title}" was reopened by @${req.user.username}.`,
   });
 
   return res
@@ -281,7 +283,7 @@ const moveTaskToColumn = asyncHandler(async (req, res) => {
     type: ACTIVITY_TYPES.MOVE_TASK,
     target: task._id,
     targetModel: "Task",
-    message: `Task "${task.title}" was moved to column "${nextColumn.title}" by ${req.user.username}.`,
+    message: `Task "${task.title}" was moved to column "${nextColumn.title}" by @${req.user.username}.`,
   });
 
   return res
