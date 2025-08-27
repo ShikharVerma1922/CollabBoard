@@ -28,7 +28,7 @@ const Login = () => {
   });
 
   return (
-    <div className="min-h-screen pt-20 px-4 overflow-hidden flex items-center justify-center">
+    <div className="fixed inset-0 px-4 flex items-center justify-center bg-[var(--bg)]">
       <div className="max-w-md w-full mt-4 p-6">
         <div className="text-center mb-10">
           <h2 className="text-3xl self-center font-sans dark:text-gray-100 font-medium">
