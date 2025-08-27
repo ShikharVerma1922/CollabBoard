@@ -63,7 +63,7 @@ const createTask = asyncHandler(async (req, res) => {
 });
 
 const updateTaskMetadata = asyncHandler(async (req, res) => {
-  const { title, description, dueDate, assignedTo } = req.body;
+  const { title, description, dueDate, assignedTo, completed } = req.body;
   const task = req.task;
 
   const userId = req.user._id;
@@ -84,47 +84,91 @@ const updateTaskMetadata = asyncHandler(async (req, res) => {
     throw new ApiError(403, "You cannot reassign this task");
   }
 
-  if (title !== undefined) {
+  // Track changes for activity logging
+  const activityMessages = [];
+  if (title !== undefined && title.trim() !== "" && title !== task.title) {
     if (!title || title.trim() === "") {
       throw new ApiError(400, "Task title cannot be empty");
     }
+    activityMessages.push(
+      `Title changed from "${task.title}" to "${title}" by ${req.user.username}.`
+    );
     task.title = title;
   }
 
-  if (description !== undefined) {
+  if (description !== undefined && description !== task.description) {
+    activityMessages.push(`Description updated by ${req.user.username}.`);
     task.description = description;
   }
 
-  if (dueDate !== undefined) {
+  if (dueDate !== undefined && dueDate.trim() !== "") {
     const parsedDate = new Date(dueDate);
     if (isNaN(parsedDate.getTime())) {
       throw new ApiError(400, "Invalid dueDate format");
     }
-    task.dueDate = parsedDate;
+    if (
+      !task.dueDate ||
+      parsedDate.getTime() !== new Date(task.dueDate).getTime()
+    ) {
+      activityMessages.push(
+        `Due date changed from "${
+          task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "None"
+        }" to "${parsedDate.toLocaleDateString()}" by ${req.user.username}.`
+      );
+      task.dueDate = parsedDate;
+    }
   }
 
-  if (assignedTo !== undefined) {
+  if (
+    typeof assignedTo === "string" &&
+    assignedTo.trim() !== "" &&
+    assignedTo !== String(task.assignedTo)
+  ) {
     const checkAssignedToUser = await User.findById(assignedTo);
     if (!checkAssignedToUser) {
       throw new ApiError(404, "Assignee does not exists");
     }
+    activityMessages.push(
+      `Task reassigned from user ID "${task.assignedTo}" to "${assignedTo}" by ${req.user.username}.`
+    );
     task.assignedTo = assignedTo;
+  }
+
+  if (completed !== undefined && completed !== task.completed) {
+    activityMessages.push(
+      `Completion status changed from "${task.completed}" to "${completed}" by ${req.user.username}.`
+    );
+    task.completed = completed;
   }
 
   await task.save();
 
   req.io?.to(req.board._id.toString())?.emit("task-updated", task);
 
-  // log activity
-  await Activity.create({
-    actor: userId,
-    workspace: req.workspace._id,
-    board: req.board._id,
-    type: ACTIVITY_TYPES.UPDATE_TASK,
-    target: task._id,
-    targetModel: "Task",
-    message: `Task "${task.title}" was updated by ${req.user.username}.`,
-  });
+  // log activity for each field updated
+  for (const msg of activityMessages) {
+    await Activity.create({
+      actor: userId,
+      workspace: req.workspace._id,
+      board: req.board._id,
+      type: ACTIVITY_TYPES.UPDATE_TASK,
+      target: task._id,
+      targetModel: "Task",
+      message: msg,
+    });
+  }
+  // If no field was changed, log a generic message
+  if (activityMessages.length === 0) {
+    await Activity.create({
+      actor: userId,
+      workspace: req.workspace._id,
+      board: req.board._id,
+      type: ACTIVITY_TYPES.UPDATE_TASK,
+      target: task._id,
+      targetModel: "Task",
+      message: `Task "${task.title}" was updated by ${req.user.username}.`,
+    });
+  }
 
   return res
     .status(200)
@@ -293,18 +337,29 @@ const getTaskById = asyncHandler(async (req, res) => {
       path: "column",
       select: "title",
     })
-    .populate({
-      path: "assignedTo",
-      select: "username fullName",
-    })
+    // .populate({
+    //   path: "assignedTo",
+    //   select: "username fullName",
+    // })
     .populate({
       path: "createdBy",
       select: "username fullName",
-    });
+    })
+    .lean();
+
+  const isCreator = req.task.createdBy.toString() === req.user._id.toString();
+  const isAssignedUser =
+    req.task.assignedTo?.toString() === req.user._id.toString();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, task, "Task fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        { ...task, isCreator, isAssignedUser },
+        "Task fetched successfully"
+      )
+    );
 });
 
 // reorder tasks in column

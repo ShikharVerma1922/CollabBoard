@@ -3,6 +3,8 @@ import axios from "axios";
 import { FiUser } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
+import { IoMdLogOut } from "react-icons/io";
+import { MdModeEditOutline } from "react-icons/md";
 
 const Profile = () => {
   const { user, setUser, logout } = useAuth(null);
@@ -58,7 +60,7 @@ const Profile = () => {
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white dark:bg-zinc-900 rounded-xl shadow mt-8 flex flex-col">
-      <div className="flex flex-col items-center gap-4 mb-6">
+      <div className="flex flex-row items-center gap-6 mb-6 justify-center">
         <div className="relative group">
           {user.avatar ? (
             <img
@@ -73,22 +75,9 @@ const Profile = () => {
           )}
           <label
             htmlFor="avatar-upload"
-            className="absolute bottom-2 right-2 bg-[var(--accent)] p-2 rounded-full cursor-pointer shadow group-hover:scale-110 transition flex items-center justify-center"
+            className="absolute bottom-2 right-2 bg-[var(--accent)] p-1.5 rounded-full cursor-pointer shadow group-hover:scale-110 transition flex items-center justify-center"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-4 h-4 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0L9 13zm-6 6v-2a2 2 0 012-2h2"
-              />
-            </svg>
+            <MdModeEditOutline className="text-white text-sm" />
             <input
               id="avatar-upload"
               type="file"
@@ -127,10 +116,10 @@ const Profile = () => {
             {user.fullName}
           </span>
           <span className="text-gray-500">@{user.username}</span>
+          <span className="text-sm text-gray-400">
+            Joined: {new Date(user.createdAt).toLocaleDateString()}
+          </span>
         </div>
-        <span className="text-sm text-gray-400">
-          Joined: {new Date(user.createdAt).toLocaleDateString()}
-        </span>
       </div>
       <div className="mb-6">
         <label className="font-semibold mb-1 flex items-center gap-2">
@@ -216,23 +205,10 @@ const Profile = () => {
         <hr className="border-gray-200 dark:border-zinc-700 mb-6" />
         <div className="flex justify-center">
           <button
-            className="flex items-center gap-2 px-5 py-3 rounded-full bg-[var(--accent)] text-white font-semibold shadow-lg hover:brightness-110 transition text-base"
+            className="flex items-center gap-2 px-5 py-3 rounded-full bg-[var(--accent)] text-white font-semibold shadow-lg hover:brightness-110 transition text-base cursor-pointer"
             onClick={logout}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1"
-              />
-            </svg>
+            <IoMdLogOut className="text-xl" />
             Log out
           </button>
         </div>
@@ -249,7 +225,7 @@ const Profile = () => {
           className="border rounded px-2 py-1 w-full mb-2"
         />
         <button
-          className="bg-red-600 text-white px-4 py-2 rounded w-full"
+          className="bg-red-600 text-white px-4 py-2 rounded w-full cursor-pointer"
           onClick={handleDeleteAccount}
         >
           Delete Account

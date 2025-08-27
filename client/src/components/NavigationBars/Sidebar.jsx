@@ -61,16 +61,16 @@ const SideBar = ({ toggleChatModal }) => {
           <img
             src="/logo-accent-dark.svg"
             alt="CollabBoard logo"
-            className="h-7 hidden dark:block"
+            className="h-10 hidden dark:block"
           />
           <img
             src="/logo-accent.svg"
             alt="CollabBoard logo"
-            className="h-7 block dark:hidden"
+            className="h-10 block dark:hidden"
           />
           {!isSBCollapsed && (
             <h1
-              className="text-[18px] hidden sm:block font-[Urbanist] py-1 bg-clip-text text-transparent"
+              className="text-[22px] hidden sm:block font-[Urbanist] py-1 bg-clip-text text-transparent"
               style={{
                 backgroundImage:
                   "linear-gradient(135deg, var(--accent), var(--text))",
@@ -310,43 +310,11 @@ const SideBar = ({ toggleChatModal }) => {
             )}
           </div>
         </div>
-        {/* <div
-          className={`flex flex-col gap-2 ${
-            isSBCollapsed ? "mb-6 sm:mb-18" : "mb-8"
-          }`}
-        >
-          <NavLink
-            to="/app/settings"
-            className={({ isActive }) =>
-              `flex justify-around gap-2 cursor-pointer sm:${
-                isSBCollapsed ? "justify-around" : "justify-start"
-              } ${
-                isActive
-                  ? "text-[var(--accent)] font-bold"
-                  : "hover:text-[var(--accent)]"
-              }`
-            }
-          >
-            <HiCog className="text-xl" />
-            {!isSBCollapsed && (
-              <span className="hidden sm:block">Settings</span>
-            )}
-          </NavLink>
-          <h3
-            className={`flex justify-around gap-2 hover:text-red-400 cursor-pointer sm:${
-              isSBCollapsed ? "justify-around" : "justify-start"
-            }`}
-            onClick={logout}
-          >
-            <HiLogout className="text-xl" />
-            {!isSBCollapsed && <span className="hidden sm:block">Logout</span>}
-          </h3>
-        </div> */}
         <div
           data-tooltip-id="below"
           data-tooltip-content="Account"
           className={`cursor-pointer self-center flex sm:hidden items-center gap-2  ${
-            isSBCollapsed ? "mb-6 sm:mb-18" : "mb-8"
+            isSBCollapsed ? "mb-10 sm:mb-18" : "mb-10"
           }`}
           onClick={() => navigate("/app/profile")}
         >

@@ -138,6 +138,14 @@ const TaskCard = ({
                 </div>
               )}
 
+              {/* Always render drag handle for dnd */}
+              <div
+                {...provided.dragHandleProps}
+                className="cursor-grab absolute top-3 right-1"
+              >
+                <LuGripVertical className="text-gray-400" />
+              </div>
+
               <div
                 className={`transition-all duration-300 ease-in-out ${
                   status || true ? "ml-0" : "ml-0"
@@ -183,15 +191,6 @@ const TaskCard = ({
                     </p>
                   )}
                 </div>
-
-                {showStatusUpdateButton && (
-                  <div
-                    {...provided.dragHandleProps}
-                    className="cursor-grab absolute top-3 right-1"
-                  >
-                    <LuGripVertical className="text-gray-400" />
-                  </div>
-                )}
               </div>
             </div>
             {/* Due in */}
@@ -232,11 +231,13 @@ const TaskCard = ({
           </div>
         )}
       </Draggable>
-      <ShowTaskDetailModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        task={selectedTask}
-      />
+      {isModalOpen && selectedTask && (
+        <ShowTaskDetailModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          task={selectedTask}
+        />
+      )}
     </div>
   );
 };
