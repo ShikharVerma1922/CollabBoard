@@ -7,7 +7,7 @@ import {
   TbLayoutSidebarLeftExpand,
 } from "react-icons/tb";
 import { FaSearch } from "react-icons/fa";
-import Sidebar from "../../components/navigationBars/Sidebar.jsx";
+import SideBar from "../../components/navigationBars/Sidebar.jsx";
 import { useWorkspace } from "../../context/WorkspaceContext.jsx";
 import Topbar from "../../components/navigationBars/Topbar.jsx";
 import ChatModal from "../../components/chat/ChatModal.jsx";
