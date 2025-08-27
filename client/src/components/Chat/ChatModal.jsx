@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import MessageCard from "./MessageCard";
+import MessageCard from "./MessageCard.jsx";
 import { IoSend } from "react-icons/io5";
 import axios from "axios";
 import { useAuth } from "../../context/authContext.jsx";

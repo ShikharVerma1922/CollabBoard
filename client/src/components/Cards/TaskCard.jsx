@@ -10,7 +10,7 @@ import { MdAssignmentInd } from "react-icons/md";
 import { BsFillPersonPlusFill } from "react-icons/bs";
 import { FaUserEdit } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
-import ShowTaskDetailModal from "../Modals/ShowTaskDetailModal.jsx";
+import ShowTaskDetailModal from "../modals/ShowTaskDetailModal.jsx";
 
 const TaskCard = ({
   title,

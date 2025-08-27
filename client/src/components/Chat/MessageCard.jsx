@@ -1,5 +1,5 @@
 import React from "react";
-import { getRandomColor } from "../../Helper/iconHelper";
+import { getRandomColor } from "../../helper/iconHelper";
 
 const MessageCard = ({
   msg,

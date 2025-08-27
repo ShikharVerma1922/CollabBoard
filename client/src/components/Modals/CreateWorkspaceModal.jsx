@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import FormInput from "../Form/FormInput.jsx";
-import FormButton from "../Form/FormButton.jsx";
+import FormInput from "../form/FormInput.jsx";
+import FormButton from "../form/FormButton.jsx";
 import axios from "axios";
 import { useWorkspaceList } from "../../context/WorkspaceListContext.jsx";
 

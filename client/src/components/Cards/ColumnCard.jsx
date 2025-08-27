@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { FiPlus } from "react-icons/fi";
-import { adjustColor, isColorDark } from "../../Helper/colorHelper.js";
+import { adjustColor, isColorDark } from "../../helper/colorHelper.js";
 import { useWorkspace } from "../../context/WorkspaceContext.jsx";
 import TaskCard from "./TaskCard.jsx";
-import CreateTaskModal from "../Modals/CreateTaskModal.jsx";
+import CreateTaskModal from "../modals/CreateTaskModal.jsx";
 
 const ColumnCard = ({
   title,

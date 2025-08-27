@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import { useAuth } from "../../context/authContext.jsx";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import FormInput from "../../components/Form/FormInput.jsx";
+import FormInput from "../../components/form/FormInput.jsx";
 import { useLogin } from "../../hooks/useLogin.jsx";
-import FormButton from "../../components/Form/FormButton.jsx";
+import FormButton from "../../components/form/FormButton.jsx";
 
 const Login = () => {
   const { user, setUser } = useAuth();

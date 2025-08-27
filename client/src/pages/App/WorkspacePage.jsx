@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useWorkspace } from "../../context/WorkspaceContext.jsx";
-import BoardCard from "../../components/Cards/BoardCard.jsx";
+import BoardCard from "../../components/cards/BoardCard.jsx";
 import { useNavigate } from "react-router-dom";
-import { getRandomColor } from "../../Helper/iconHelper.js";
-import CreateBoardModel from "../../components/Modals/CreateBoardModal.jsx";
+import { getRandomColor } from "../../helper/iconHelper.js";
+import CreateBoardModel from "../../components/modals/CreateBoardModal.jsx";
 import { FilePen } from "lucide-react";
 import { TbFilePencil } from "react-icons/tb";
 import { FiEdit, FiEdit2 } from "react-icons/fi";
-import UpdateWorkspaceModal from "../../components/Modals/UpdateWorkspaceModal.jsx";
+import UpdateWorkspaceModal from "../../components/modals/UpdateWorkspaceModal.jsx";
 
 const WorkspacePage = () => {
   const { id } = useParams(); // get workspace ID from URL

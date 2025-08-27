@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useWorkspace } from "../../context/WorkspaceContext.jsx";
-import MemberCard from "../../components/Cards/MemberCard.jsx";
+import MemberCard from "../../components/cards/MemberCard.jsx";
 import {
   fetchMembers,
   handleAddMember,

@@ -7,10 +7,10 @@ import {
   TbLayoutSidebarLeftExpand,
 } from "react-icons/tb";
 import { FaSearch } from "react-icons/fa";
-import SideBar from "../../components/NavigationBars/SideBar.jsx";
+import SideBar from "../../components/navigationBars/SideBar.jsx";
 import { useWorkspace } from "../../context/WorkspaceContext.jsx";
-import Topbar from "../../components/NavigationBars/Topbar.jsx";
-import ChatModal from "../../components/Chat/ChatModal.jsx";
+import Topbar from "../../components/navigationBars/Topbar.jsx";
+import ChatModal from "../../components/chat/ChatModal.jsx";
 
 const MainLayout = () => {
   const [chatVisible, setChatVisible] = useState(false);

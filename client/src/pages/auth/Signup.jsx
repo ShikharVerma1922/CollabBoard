@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import FormInput from "../../components/Form/FormInput.jsx";
+import FormInput from "../../components/form/FormInput.jsx";
 import { useSignup } from "../../hooks/useSignup.jsx";
 
-import LogoHeader from "../../components/Form/LogoHeader.jsx";
-import FormButton from "../../components/Form/FormButton.jsx";
+import LogoHeader from "../../components/form/LogoHeader.jsx";
+import FormButton from "../../components/form/FormButton.jsx";
 
 const Signup = () => {
   const {

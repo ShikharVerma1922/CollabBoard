@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MdDelete } from "react-icons/md";
 import { useAuth } from "../../context/authContext.jsx";
 import { useParams } from "react-router-dom";
-import PopUpModal from "../Modals/PopUpModal.jsx";
+import PopUpModal from "../modals/PopUpModal.jsx";
 import { FaRegUser } from "react-icons/fa";
 import {
   confirmRemoveMember,

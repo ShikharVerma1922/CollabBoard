@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import BoardCard from "../../components/Cards/BoardCard.jsx";
+import BoardCard from "../../components/cards/BoardCard.jsx";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useWorkspaceList } from "../../context/WorkspaceListContext.jsx";
 import { FaSuitcase, FaStar, FaClipboardList } from "react-icons/fa";
-import { fetchWorkspaces } from "../../services/workspaceService";
+import { fetchWorkspaces } from "../../services/workspaceService.js";
 
 //implement the toggle board favourite endpoint
 // implement the get favouite and recent boards endpoint

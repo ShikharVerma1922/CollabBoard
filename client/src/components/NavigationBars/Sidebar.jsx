@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import WorkspaceCard from "../Cards/WorkspaceCard.jsx";
+import WorkspaceCard from "../cards/WorkspaceCard.jsx";
 import { fetchWorkspaces } from "../../services/workspaceService.js";
 import { useLocation, NavLink, useNavigate } from "react-router-dom";
 
@@ -21,8 +21,8 @@ import {
 import { AiFillPlusCircle } from "react-icons/ai";
 import { SiGoogletasks } from "react-icons/si";
 import { FaSuitcase } from "react-icons/fa";
-import { getRandomColor } from "../../Helper/iconHelper.js";
-import CreateWorkspaceModel from "../Modals/CreateWorkspaceModal.jsx";
+import { getRandomColor } from "../../helper/iconHelper.js";
+import CreateWorkspaceModel from "../modals/CreateWorkspaceModal.jsx";
 import { useWorkspaceList } from "../../context/WorkspaceListContext.jsx";
 import { useAuth } from "../../context/authContext.jsx";
 import { FiUser } from "react-icons/fi";
